@@ -1,9 +1,13 @@
-CREATE TABLE dbo.Users
+CREATE TABLE [dbo].[users]
 (
-    UserID INT IDENTITY(1,1) PRIMARY KEY,
-    FirstName NVARCHAR(50),
-    LastName NVARCHAR(50),
-    Email NVARCHAR(100),
-    Bio NVARCHAR(256),
-    ProfilePicture NVARCHAR (500)
-)
+    user_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    first_name NVARCHAR(50) NOT NULL,
+    last_name NVARCHAR(50) NOT NULL,
+    email NVARCHAR(100) NOT NULL,
+    bio NVARCHAR(256),
+    profile_picture NVARCHAR (500),
+    profile_created_datetime DATETIME DEFAULT GETDATE(),
+    profile_updated_datetime DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT UC__users__email UNIQUE (email)
+);

@@ -1,9 +1,10 @@
-CREATE TABLE dbo.Questions
+CREATE TABLE [dbo].[questions]
 (
-    QuestionID INT IDENTITY(1,1) PRIMARY KEY,
-    QuestionTitle NVARCHAR (1000),
-    QuestionDetails NVARCHAR (4000),
-    QuestionDateTime DATETIME,
-    QuestionPosterID INT,
-    QuestionTopicID INT
-)
+    question_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    question_title NVARCHAR (1000) NOT NULL,
+    question_details NVARCHAR (4000) NOT NULL,
+    question_poster_id BIGINT NOT NULL,
+    question_topic_id BIGINT NOT NULL,
+    question_created_datetime DATETIME DEFAULT GETDATE(),
+    question_updated_datetime DATETIME DEFAULT GETDATE()
+);

@@ -1,9 +1,10 @@
-CREATE TABLE dbo.Answers
+CREATE TABLE [dbo].[answers]
 (
-    AnswerID INT IDENTITY(1,1) PRIMARY KEY,
-    AnswerText NVARCHAR (MAX),
-    AnswerDateTime DATETIME,
-    AnswerPosterID INT,
-    QuestionID INT,
-    NumberUpvotes INT
-)
+    answer_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    answer_text NVARCHAR (MAX) NOT NULL,
+    answer_poster_id BIGINT NOT NULL,
+    question_id BIGINT NOT NULL,
+    upvotes INT DEFAULT 0,
+    answer_created_datetime DATETIME DEFAULT GETDATE(),
+    answer_updated_datetime DATETIME DEFAULT GETDATE()
+);

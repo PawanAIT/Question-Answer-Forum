@@ -1,5 +1,7 @@
-CREATE TABLE dbo.Topics
+CREATE TABLE [dbo].[topics]
 (
-    TopicID INT IDENTITY(1,1) PRIMARY KEY,
-    TopicName NVARCHAR (50)
-)
+    topic_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    topic_name NVARCHAR (50) NOT NULL,
+
+    CONSTRAINT UC__topics__topic_name UNIQUE (topic_name)
+);
