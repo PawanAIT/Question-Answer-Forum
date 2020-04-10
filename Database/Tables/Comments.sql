@@ -1,9 +1,11 @@
-CREATE TABLE dbo.Comments
+CREATE TABLE [dbo].[comments]
 (
-    CommentID INT IDENTITY(1,1) PRIMARY KEY,
-    CommentText NVARCHAR (MAX),
-    CommentDateTime DATETIME,
-    CommentPosterID INT,
-    AnswerID INT,
-    NumberUpvotes INT
-)
+    comment_id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    comment_text NVARCHAR (MAX),
+    comment_datetime DATETIME,
+    comment_poster_id BIGINT,
+    answer_id BIGINT,
+    upvotes INT,
+    comment_created_datetime DATETIME DEFAULT GETDATE(),
+    comment_updated_datetime DATETIME DEFAULT GETDATE()
+);
