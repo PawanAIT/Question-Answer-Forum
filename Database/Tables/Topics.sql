@@ -1,0 +1,5 @@
+CREATE TABLE dbo.Topics
+(
+    TopicID INT IDENTITY(1,1) PRIMARY KEY,
+    TopicName NVARCHAR (50)
+)
