@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_InsertUserDetails]      
+﻿CREATE PROCEDURE [dbo].[sp_Insert_User_Details]      
 (      
     @first_name NVARCHAR(50),
     @last_name NVARCHAR(50),

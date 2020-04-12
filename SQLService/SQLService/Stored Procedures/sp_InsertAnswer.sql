@@ -1,4 +1,4 @@
-﻿ CREATE PROCEDURE [dbo].[sp_InsertAnswer]      
+﻿ CREATE PROCEDURE [dbo].[sp_Insert_Answer]      
 (      
     @answer_text NVARCHAR (MAX),
     @answer_poster_id BIGINT,

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_FollowTopic]      
+﻿CREATE PROCEDURE [dbo].[sp_Follow_Topic]      
 (      
     @followed_topic_id BIGINT,
 	@follower_user_id BIGINT

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_InsertQuestion]      
+﻿CREATE PROCEDURE [dbo].[sp_Insert_Question]      
 (      
     @question_title NVARCHAR (1000),
     @question_details NVARCHAR (4000),

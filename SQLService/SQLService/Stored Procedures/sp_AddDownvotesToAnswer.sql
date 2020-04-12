@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_AddDownvotesToAnswer]      
+﻿CREATE PROCEDURE [dbo].[sp_Add_Downvotes_To_Answer]      
 (      
 	@answer_id BIGINT,
     @downvotes_to_add INT

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_AddKudosToAnswer]      
+﻿CREATE PROCEDURE [dbo].[sp_Add_Kudos_To_Answer]      
 (      
 	@answer_id BIGINT,
     @kudos_to_add INT

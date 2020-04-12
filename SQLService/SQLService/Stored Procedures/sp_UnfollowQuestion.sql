@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_UnfollowQuestion]      
+﻿CREATE PROCEDURE [dbo].[sp_Unfollow_Question]      
 (      
 	@unfollower_user_id BIGINT,
     @unfollowed_question_id BIGINT

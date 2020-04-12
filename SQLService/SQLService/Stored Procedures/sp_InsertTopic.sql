@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_InsertTopic]      
+﻿CREATE PROCEDURE [dbo].[sp_Insert_Topic]      
 (      
     @topic_name NVARCHAR (50)
 )      
