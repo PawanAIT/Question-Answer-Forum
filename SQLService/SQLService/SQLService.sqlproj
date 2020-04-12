@@ -79,5 +79,9 @@
     <Build Include="Tables\UserSeenQuestion.sql" />
     <Build Include="Stored Procedures\sp_AddKudosToAnswer.sql" />
     <Build Include="Stored Procedures\sp_AddDownvotesToAnswer.sql" />
+    <Build Include="Tables\user_gave_kudos.sql" />
+    <Build Include="Stored Procedures\sp_UnfollowQuestion.sql" />
+    <Build Include="Stored Procedures\sp_UnfollowTopic.sql" />
+    <Build Include="Stored Procedures\sp_UnfollowUser.sql" />
   </ItemGroup>
 </Project>
