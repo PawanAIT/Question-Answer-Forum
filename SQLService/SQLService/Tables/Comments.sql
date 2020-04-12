@@ -6,6 +6,6 @@ CREATE TABLE [dbo].[comments]
     comment_poster_id BIGINT,
     answer_id BIGINT,
     upvotes INT,
-    comment_created_datetime DATETIME DEFAULT GETDATE(),
-    comment_updated_datetime DATETIME DEFAULT GETDATE()
+    comment_created_datetime DATETIME DEFAULT GETUTCDATE(),
+    comment_updated_datetime DATETIME DEFAULT GETUTCDATE()
 );

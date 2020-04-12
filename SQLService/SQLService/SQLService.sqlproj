@@ -67,5 +67,9 @@
     <Build Include="Tables\Questions.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Tables\Users.sql" />
+    <Build Include="Tables\UserSeenEntity.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="SQLService.refactorlog" />
   </ItemGroup>
 </Project>
