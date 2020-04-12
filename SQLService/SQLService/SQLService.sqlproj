@@ -57,6 +57,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Answers.sql" />
@@ -67,9 +68,13 @@
     <Build Include="Tables\Questions.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Tables\Users.sql" />
-    <Build Include="Tables\UserSeenEntity.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="SQLService.refactorlog" />
+    <Build Include="Tables\UserSeenAnswers.sql" />
+    <Build Include="Stored Procedures\sp_InsertUserDetails.sql" />
+    <Build Include="Stored Procedures\sp_InsertQuestions.sql" />
+    <Build Include="Stored Procedures\sp_InsertTopic.sql" />
+    <Build Include="Stored Procedures\sp_FollowTopic.sql" />
+    <Build Include="Stored Procedures\sp_InsertAnswer.sql" />
+    <Build Include="Stored Procedures\sp_FollowUser.sql" />
+    <Build Include="Stored Procedures\sp_FollowQuestion.sql" />
   </ItemGroup>
 </Project>
