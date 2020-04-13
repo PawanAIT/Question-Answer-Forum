@@ -6,8 +6,8 @@ CREATE TABLE [dbo].[users]
     email NVARCHAR(100) NOT NULL,
     bio NVARCHAR(256),
     profile_picture NVARCHAR (500),
-    profile_created_datetime DATETIME DEFAULT GETDATE(),
-    profile_updated_datetime DATETIME DEFAULT GETDATE(),
+    profile_created_datetime DATETIME DEFAULT GETUTCDATE(),
+    profile_updated_datetime DATETIME DEFAULT GETUTCDATE(),
 
     CONSTRAINT UC__users__email UNIQUE (email)
 );
