@@ -93,7 +93,19 @@ func AddUser(db *sql.DB, firstName string, lastName string, email string) (int64
 		return -1, err
 	}
 
-	tsql := "INSERT INTO Users (first_name, last_name, email) VALUES (@first_name, @last_name, @email);" // select convert(bigint, SCOPE_IDENTITY());"
+	var blank = "aa"
+	res, err := db.ExecContext(ctx, "sp_Insert_User_Details",
+		sql.Named("first_name", firstName),
+		sql.Named("last_name", lastName),
+		sql.Named("email", email),
+		sql.Named("bio", blank),
+		sql.Named("profile_picture", blank),
+	)
+	if err != nil {
+		return -1, err
+	}
+
+	/*tsql := "INSERT INTO Users (first_name, last_name, email) VALUES (@first_name, @last_name, @email);" // select convert(bigint, SCOPE_IDENTITY());"
 
 	stmt, err := db.Prepare(tsql)
 	if err != nil {
@@ -105,12 +117,18 @@ func AddUser(db *sql.DB, firstName string, lastName string, email string) (int64
 		sql.Named("first_name", firstName),
 		sql.Named("last_name", lastName),
 		sql.Named("email", email))
+
 	var newID int64
 	err = row.Scan(&newID)
 	if err != nil {
 		return -1, err
-	}
+	}*/
 
+	var newID int64
+	newID, err = res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
 	return newID, nil
 }
 
