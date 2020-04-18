@@ -1,6 +1,7 @@
-package auth
+package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -8,6 +9,16 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
+
+//TODO: gRPC Call for Google OAuth2 Authentication https://medium.com/google-cloud/grpc-authentication-with-google-openid-connect-tokens-812ceb3e5c41
+
+//OAuthInfo contains data returned from OAuth2 Verifier
+type OAuthInfo struct {
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Picture       string `json:"picture"`
+}
 
 var (
 	googleOauthConfig *oauth2.Config
@@ -50,17 +61,27 @@ func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	content, err := getUserInfo(r.FormValue("state"), r.FormValue("code"))
+	userInfo, err := getUserInfo(r.FormValue("state"), r.FormValue("code"))
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	fmt.Fprintf(w, "Content: %s\n", content)
+	fmt.Println(userInfo.Email)
+
+	/*jwt := auth.NewJWTManager("foo", time.Minute*5)
+	token, err := jwt.Generate(&auth.User{
+		Username: userInfo.Email,
+		Id:       userInfo.ID,
+	})
+	if err != nil {
+		fmt.Println("Unable to generate token")
+	}
+	fmt.Println(token)*/
 }
 
-func getUserInfo(state string, code string) ([]byte, error) {
+func getUserInfo(state string, code string) (*OAuthInfo, error) {
 	if state != oauthStateString {
 		return nil, fmt.Errorf("invalid oauth state")
 	}
@@ -75,12 +96,22 @@ func getUserInfo(state string, code string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
-	fmt.Println(token.AccessToken)
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading response body: %s", err.Error())
 	}
 
-	return contents, nil
+	/*pingJSON := make(map[string][]pingDataFormat)
+	err := json.Unmarshal([]byte(pingData), &pingJSON)
+	if err != nil { panic(err) }
+	fmt.Printf("\n\n json object:::: %v", pingJSON)
+	*/
+
+	var userInfo *OAuthInfo
+	err = json.Unmarshal(contents, userInfo)
+	if err != nil {
+		panic(err)
+	}
+	return userInfo, nil
 }

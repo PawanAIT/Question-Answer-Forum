@@ -17,7 +17,7 @@ type JWTManager struct {
 type UserClaims struct {
 	jwt.StandardClaims
 	Username string `json:"username"`
-	Role     string `json:"role"`
+	Id       string `json:"id"`
 }
 
 // NewJWTManager returns a new JWT manager
@@ -32,7 +32,7 @@ func (manager *JWTManager) Generate(user *User) (string, error) {
 			ExpiresAt: time.Now().Add(manager.tokenDuration).Unix(),
 		},
 		Username: user.Username,
-		Role:     user.Role,
+		Id:       user.Id,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

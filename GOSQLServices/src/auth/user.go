@@ -3,15 +3,15 @@ package auth
 // User contains user's information
 type User struct {
 	Username string
-	Role     string
+	Id       string
 }
 
 // NewUser returns a new user
-func NewUser(username string, password string, role string) (*User, error) {
+func NewUser(username string, password string, id string) (*User, error) {
 
 	user := &User{
 		Username: username,
-		Role:     role,
+		Id:       id,
 	}
 
 	return user, nil
@@ -21,6 +21,6 @@ func NewUser(username string, password string, role string) (*User, error) {
 func (user *User) Clone() *User {
 	return &User{
 		Username: user.Username,
-		Role:     user.Role,
+		Id:       user.Id,
 	}
 }
