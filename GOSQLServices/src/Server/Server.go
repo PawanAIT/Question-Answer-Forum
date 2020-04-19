@@ -26,9 +26,9 @@ import (
 type server struct{}
 
 func main() {
-	listener, err := net.Listen("tcp", ":4041")
-	http.HandleFunc("/callback", handleGoogleCallback)
-	http.ListenAndServe(":4040", nil)
+	listener, err := net.Listen("tcp", "0.0.0.0:4567")
+	// http.HandleFunc("/callback", handleGoogleCallback)
+	// http.ListenAndServe(":4040", nil)
 
 	if err != nil {
 		panic(err)
@@ -56,34 +56,12 @@ type OAuthInfo struct {
 
 func init() {
 	googleOauthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:4040/callback",
+		RedirectURL:  "http://localhost:8080/callback",
 		ClientID:     "392376614027-qpuh3t81joaucdt4kcgpq84gbfqrr83f.apps.googleusercontent.com",
 		ClientSecret: "0ISYm6CUhkyezn_JpBzV1lIA",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
-}
-
-func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Inside callback")
-	userInfo, err := getUserInfo(r.FormValue("state"), r.FormValue("code"))
-	if err != nil {
-		fmt.Println(err.Error())
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	fmt.Println(userInfo.Email)
-
-	jwt := auth.NewJWTManager("foo", time.Minute*5)
-	token, err := jwt.Generate(&auth.User{
-		Username: userInfo.Email,
-		Id:       userInfo.ID,
-	})
-	if err != nil {
-		fmt.Println("Unable to generate token")
-	}
-	fmt.Println(token)
 }
 
 var (
@@ -92,9 +70,10 @@ var (
 	oauthStateString = "pseudo-random"
 )
 
-func getUserInfo(state string, code string) (*OAuthInfo, error) {
+func getUserInfoAndJWTAccessToken(state string, code string) (string, error) {
+
 	if state != oauthStateString {
-		return nil, fmt.Errorf("invalid oauth state")
+		return "", fmt.Errorf("invalid oauth state")
 	}
 
 	fmt.Println(code)
@@ -102,25 +81,35 @@ func getUserInfo(state string, code string) (*OAuthInfo, error) {
 	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
 
 	if err != nil {
-		return nil, fmt.Errorf("code exchange failed: %s", err.Error())
+		return "", fmt.Errorf("code exchange failed: %s", err.Error())
 	}
 
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
+		return "", fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading response body: %s", err.Error())
+		return "", fmt.Errorf("failed reading response body: %s", err.Error())
 	}
+
+	fmt.Println(token)
 
 	var userInfo OAuthInfo
 	err = json.Unmarshal(contents, &userInfo)
 	if err != nil {
 		panic(err)
 	}
-	return &userInfo, nil
+	jwt := auth.NewJWTManager("foobar", time.Minute*5)
+	jwttoken, err := jwt.Generate(&auth.User{
+		Username: userInfo.Email,
+		Id:       userInfo.ID,
+	})
+	if err != nil {
+		fmt.Println("Unable to generate token")
+	}
+	return jwttoken, nil
 }
 
 func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Response, error) {
@@ -138,6 +127,19 @@ func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Respo
 	response = fmt.Sprintf("Inserted ID: %d successfully.\n", createID)
 	return &proto.Response{Resp: response}, nil
 
+}
+
+func (s *server) Login(ctx context.Context, request *proto.LoginRequest) (*proto.Token, error) {
+	state, authcode := request.GetState(), request.GetAuthcode()
+	fmt.Println("state =  %s, authcode = %s", state, authcode)
+	accessToken, err := getUserInfoAndJWTAccessToken(state, authcode)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accessToken : %s", err.Error())
+	}
+	fmt.Println("InsideLoginFunction")
+
+	res := &proto.Token{AccessToken: accessToken}
+	return res, nil
 }
 
 func (s *server) ReadUsers(ctx context.Context, request *proto.Khali) (*proto.Response, error) {
