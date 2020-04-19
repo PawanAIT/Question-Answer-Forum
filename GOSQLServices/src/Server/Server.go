@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Server_interceptor"
 	"context"
 	"database/sql"
 	"fmt"
@@ -19,11 +20,14 @@ type server struct{}
 
 func main() {
 	listener, err := net.Listen("tcp", ":4040")
+
 	if err != nil {
 		panic(err)
 	}
-
-	srv := grpc.NewServer()
+	interceptor := Server_interceptor.NewAuthInterceptor()
+	srv := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.Unary()),
+	)
 	proto.RegisterAddServiceServer(srv, &server{})
 	reflection.Register(srv)
 
@@ -52,7 +56,7 @@ func (s *server) Multiply(ctx context.Context, request *proto.Request) (*proto.R
 
 func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Response, error) {
 	fName, lName, email := request.GetFirstName(), request.GetLastName(), request.GetEmail()
-
+	fmt.Println(fName, lName, email)
 	var db *sql.DB
 	db = msdb.ConnectDatabase()
 	defer db.Close()

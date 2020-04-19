@@ -11,11 +11,10 @@ import (
 )
 
 func authMethods() map[string]bool {
-
+	const path = "/proto.AddService/"
 	return map[string]bool{
-		"AddUser":     true,
-		"UploadImage": true,
-		"RateLaptop":  true,
+		path + "AddUser":   true,
+		path + "ReadUsers": true,
 	}
 }
 

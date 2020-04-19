@@ -20,9 +20,9 @@ func NewAuthInterceptor(
 ) (*AuthInterceptor, error) {
 	interceptor := &AuthInterceptor{
 		authMethods: authMethods,
+		accessToken: "pawan",
 	}
-	interceptor.accessToken = "pawan"
-
+	log.Printf("Inside Client AuthIntercept")
 	return interceptor, nil
 }
 
@@ -39,7 +39,10 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryClientInterceptor {
 		log.Printf("--> unary interceptor: %s", method)
 
 		if interceptor.authMethods[method] {
+			log.Printf("Method found %s", method)
 			return invoker(interceptor.attachToken(ctx), method, req, reply, cc, opts...)
+		} else {
+			log.Printf("Method Not found %s", method)
 		}
 
 		return invoker(ctx, method, req, reply, cc, opts...)
