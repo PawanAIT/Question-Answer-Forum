@@ -16,7 +16,17 @@ message Response{
   string resp = 1;
 }
 
+message Token{
+  string accessToken = 1;
+}
+
+message LoginRequest{
+  string state = 1;
+  string Authcode = 2;
+}
+
 service AddService {
   rpc AddUser(User) returns (Response);
   rpc ReadUsers(Khali) returns (Response);
+  rpc Login(LoginRequest) returns (Token);
 }

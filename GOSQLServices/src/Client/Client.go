@@ -18,6 +18,7 @@ func authMethods() map[string]bool {
 	return map[string]bool{
 		path + "AddUser":   true,
 		path + "ReadUsers": true,
+		path + "Login":     true,
 	}
 }
 
@@ -37,13 +38,20 @@ func init() {
 	}
 }
 
+var state string
+var authcode string
+
 func main() {
 
 	interceptor, err := Client_interceptor.NewAuthInterceptor(authMethods())
 	if err != nil {
 		panic(err)
 	}
-	conn, err := grpc.Dial("localhost:4040", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
+
+	conn, err := grpc.Dial("localhost:4567", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
+	if err != nil {
+		return
+	}
 	Client := proto.NewAddServiceClient(conn)
 	g := gin.Default()
 	g.GET("/", func(ctx *gin.Context) {
@@ -51,14 +59,32 @@ func main() {
 		var r *http.Request = ctx.Request
 		handleMain(w, r)
 	})
-	g.GET("/login", func(ctx *gin.Context) {
+	g.GET("/loginWithGoogle", func(ctx *gin.Context) {
 		var w http.ResponseWriter = ctx.Writer
 		var r *http.Request = ctx.Request
 		handleGoogleLogin(w, r)
 	})
 
-	g.GET("/add/:a/:b/:c", func(ctx *gin.Context) {
+	g.GET("/callback", func(ctx *gin.Context) {
+		var w http.ResponseWriter = ctx.Writer
+		var r *http.Request = ctx.Request
+		handleGoogleCallback(w, r)
+	})
 
+	g.GET("/login", func(ctx *gin.Context) {
+		req := &proto.LoginRequest{State: state, Authcode: authcode}
+
+		if Token, err := Client.Login(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": Token.AccessToken,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+
+	})
+
+	g.GET("/add/:a/:b/:c", func(ctx *gin.Context) {
 		req := &proto.User{FirstName: ctx.Param("a"), LastName: ctx.Param("b"), Email: ctx.Param("c")}
 		if response, err := Client.AddUser(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -97,7 +123,7 @@ type OAuthInfo struct {
 
 func init() {
 	googleOauthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:4040/callback",
+		RedirectURL:  "http://localhost:8080/callback",
 		ClientID:     "392376614027-qpuh3t81joaucdt4kcgpq84gbfqrr83f.apps.googleusercontent.com",
 		ClientSecret: "0ISYm6CUhkyezn_JpBzV1lIA",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
@@ -108,7 +134,7 @@ func init() {
 func handleMain(w http.ResponseWriter, req *http.Request) {
 	var htmlIndex = `<html>
 	<body>
-		<a href="/login">Google Log In</a>
+		<a href="/loginWithGoogle">Google Log In</a>
 	</body>
 	</html>`
 
@@ -117,4 +143,10 @@ func handleMain(w http.ResponseWriter, req *http.Request) {
 func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	url := googleOauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+}
+
+func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
+	state, authcode = r.FormValue("state"), r.FormValue("code")
+	fmt.Println(state, authcode)
+	fmt.Fprintf(w, "state: %s and authcode : %s \n", state, authcode)
 }

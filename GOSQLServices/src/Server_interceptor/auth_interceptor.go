@@ -49,10 +49,11 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 
 	if len(values) == 0 {
 		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	} else {
+		accessToken := values[0]
+		fmt.Println(accessToken)
+		return nil
 	}
 
-	accessToken := values[0]
-	fmt.Println(accessToken)
-
-	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
+	//return status.Error(codes.PermissionDenied, "no permission to access this RPC")
 }
