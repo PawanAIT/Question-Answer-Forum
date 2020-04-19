@@ -1,28 +1,35 @@
 package main
 
 import (
+	"Client_interceptor"
 	"log"
 	"net/http"
-
 	"proto"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 )
 
+func authMethods() map[string]bool {
+	const path = "/proto.AddService/"
+	return map[string]bool{
+		path + "AddUser":   true,
+		path + "ReadUsers": true,
+	}
+}
+
 func main() {
-	conn, err := grpc.Dial("localhost:4040", grpc.WithInsecure())
+	interceptor, err := Client_interceptor.NewAuthInterceptor(authMethods())
 	if err != nil {
 		panic(err)
 	}
-
-	client := proto.NewAddServiceClient(conn)
-
+	conn, err := grpc.Dial("localhost:4040", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
+	Client := proto.NewAddServiceClient(conn)
 	g := gin.Default()
 	g.GET("/add/:a/:b/:c", func(ctx *gin.Context) {
 
 		req := &proto.User{FirstName: ctx.Param("a"), LastName: ctx.Param("b"), Email: ctx.Param("c")}
-		if response, err := client.AddUser(ctx, req); err == nil {
+		if response, err := Client.AddUser(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"result": response.Resp,
 			})
@@ -34,7 +41,7 @@ func main() {
 	g.GET("/show", func(ctx *gin.Context) {
 		req := &proto.Khali{}
 
-		if response, err := client.ReadUsers(ctx, req); err == nil {
+		if response, err := Client.ReadUsers(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"result": response.Resp,
 			})

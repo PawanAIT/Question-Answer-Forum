@@ -10,15 +10,13 @@ import (
 func main() {
 	fmt.Println("Yo")
 	jwt := auth.NewJWTManager("foo", time.Minute*5)
-	server := auth.NewJWTManager("foo", time.Minute*5)
 	token, err := jwt.Generate(&auth.User{
-		Username: "pwaan",
+		Username: "pawan",
 		Role:     "admin",
 	})
 	if err != nil {
-		fmt.Println("phatt gaya")
+		fmt.Println("Unable to generate token")
 	}
-	fmt.Println(token)
 
 	reps, err := server.Verify(token)
 	if err != nil {
