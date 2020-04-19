@@ -27,14 +27,10 @@ type server struct{}
 
 func main() {
 	listener, err := net.Listen("tcp", "0.0.0.0:4567")
-	// http.HandleFunc("/callback", handleGoogleCallback)
-	// http.ListenAndServe(":4040", nil)
-
 	if err != nil {
 		panic(err)
 	}
-
-	interceptor := Server_interceptor.NewAuthInterceptor()
+	interceptor := Server_interceptor.NewAuthInterceptor(jwtManager)
 	srv := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 	)
@@ -68,6 +64,7 @@ var (
 	googleOauthConfig *oauth2.Config
 	// TODO: randomize it
 	oauthStateString = "pseudo-random"
+	jwtManager       = auth.NewJWTManager("foobar", time.Minute*15)
 )
 
 func getUserInfoAndJWTAccessToken(state string, code string) (string, error) {
@@ -101,8 +98,7 @@ func getUserInfoAndJWTAccessToken(state string, code string) (string, error) {
 	if err != nil {
 		panic(err)
 	}
-	jwt := auth.NewJWTManager("foobar", time.Minute*5)
-	jwttoken, err := jwt.Generate(&auth.User{
+	jwttoken, err := jwtManager.Generate(&auth.User{
 		Username: userInfo.Email,
 		Id:       userInfo.ID,
 	})

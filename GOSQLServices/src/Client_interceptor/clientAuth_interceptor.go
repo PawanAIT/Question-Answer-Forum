@@ -16,11 +16,12 @@ type AuthInterceptor struct {
 
 // NewAuthInterceptor returns a new auth interceptor
 func NewAuthInterceptor(
+	jwtToken string,
 	authMethods map[string]bool,
 ) (*AuthInterceptor, error) {
 	interceptor := &AuthInterceptor{
 		authMethods: authMethods,
-		accessToken: "pawan",
+		accessToken: jwtToken,
 	}
 	log.Printf("Inside Client AuthIntercept")
 	return interceptor, nil

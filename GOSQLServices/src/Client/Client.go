@@ -38,21 +38,30 @@ func init() {
 	}
 }
 
-var state string
-var authcode string
+var jwtToken string
 
-func main() {
-
-	interceptor, err := Client_interceptor.NewAuthInterceptor(authMethods())
+func getInterceptor() (proto.AddServiceClient, error) {
+	interceptor, err := Client_interceptor.NewAuthInterceptor(jwtToken, authMethods())
 	if err != nil {
 		panic(err)
 	}
 
 	conn, err := grpc.Dial("localhost:4567", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
 	if err != nil {
-		return
+		return nil, err
 	}
 	Client := proto.NewAddServiceClient(conn)
+	return Client, nil
+}
+
+func main() {
+
+	connectionWithoutInterceptor, err := grpc.Dial("localhost:4567", grpc.WithInsecure())
+	if err != nil {
+		log.Fatal("cannot dial server: ", err)
+	}
+	ClientWithoutInterceptor := proto.NewAddServiceClient(connectionWithoutInterceptor)
+	var Client proto.AddServiceClient
 	g := gin.Default()
 	g.GET("/", func(ctx *gin.Context) {
 		var w http.ResponseWriter = ctx.Writer
@@ -68,20 +77,18 @@ func main() {
 	g.GET("/callback", func(ctx *gin.Context) {
 		var w http.ResponseWriter = ctx.Writer
 		var r *http.Request = ctx.Request
-		handleGoogleCallback(w, r)
-	})
+		state, authcode := handleGoogleCallback(w, r)
 
-	g.GET("/login", func(ctx *gin.Context) {
 		req := &proto.LoginRequest{State: state, Authcode: authcode}
-
-		if Token, err := Client.Login(ctx, req); err == nil {
+		if Token, err := ClientWithoutInterceptor.Login(ctx, req); err == nil {
+			jwtToken = Token.AccessToken
+			Client, _ = getInterceptor()
 			ctx.JSON(http.StatusOK, gin.H{
-				"result": Token.AccessToken,
+				"result": jwtToken,
 			})
 		} else {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
-
 	})
 
 	g.GET("/add/:a/:b/:c", func(ctx *gin.Context) {
@@ -145,8 +152,7 @@ func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	state, authcode = r.FormValue("state"), r.FormValue("code")
-	fmt.Println(state, authcode)
-	fmt.Fprintf(w, "state: %s and authcode : %s \n", state, authcode)
+func handleGoogleCallback(w http.ResponseWriter, r *http.Request) (string, string) {
+	state, authcode := r.FormValue("state"), r.FormValue("code")
+	return state, authcode
 }
