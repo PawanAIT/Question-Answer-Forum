@@ -28,7 +28,7 @@ var (
 
 func init() {
 	googleOauthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/callback",
+		RedirectURL:  "http://localhost:4040/callback",
 		ClientID:     "392376614027-qpuh3t81joaucdt4kcgpq84gbfqrr83f.apps.googleusercontent.com",
 		ClientSecret: "0ISYm6CUhkyezn_JpBzV1lIA",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
@@ -86,6 +86,8 @@ func getUserInfo(state string, code string) (*OAuthInfo, error) {
 		return nil, fmt.Errorf("invalid oauth state")
 	}
 
+	fmt.Println(code)
+
 	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
 
 	if err != nil {
@@ -108,10 +110,10 @@ func getUserInfo(state string, code string) (*OAuthInfo, error) {
 	fmt.Printf("\n\n json object:::: %v", pingJSON)
 	*/
 
-	var userInfo *OAuthInfo
-	err = json.Unmarshal(contents, userInfo)
+	var userInfo OAuthInfo
+	err = json.Unmarshal(contents, &userInfo)
 	if err != nil {
 		panic(err)
 	}
-	return userInfo, nil
+	return &userInfo, nil
 }
