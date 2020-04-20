@@ -1,4 +1,4 @@
-package Server_interceptor
+package ServerInterceptor
 
 import (
 	"context"

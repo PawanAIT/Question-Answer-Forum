@@ -1,11 +1,12 @@
 package main
 
 import (
-	"Client_interceptor"
 	"fmt"
 	"log"
 	"net/http"
 	"proto"
+
+	"ClientInterceptor"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -41,7 +42,7 @@ func init() {
 var jwtToken string
 
 func getInterceptor() (proto.AddServiceClient, error) {
-	interceptor, err := Client_interceptor.NewAuthInterceptor(jwtToken, authMethods())
+	interceptor, err := ClientInterceptor.NewAuthInterceptor(jwtToken, authMethods())
 	if err != nil {
 		panic(err)
 	}
@@ -126,16 +127,6 @@ type OAuthInfo struct {
 	Email         string `json:"email"`
 	VerifiedEmail bool   `json:"verified_email"`
 	Picture       string `json:"picture"`
-}
-
-func init() {
-	googleOauthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/callback",
-		ClientID:     "392376614027-qpuh3t81joaucdt4kcgpq84gbfqrr83f.apps.googleusercontent.com",
-		ClientSecret: "0ISYm6CUhkyezn_JpBzV1lIA",
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint:     google.Endpoint,
-	}
 }
 
 func handleMain(w http.ResponseWriter, req *http.Request) {
