@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Server_interceptor"
 	"auth"
 	"context"
 	"database/sql"
@@ -13,6 +12,7 @@ import (
 	"net/http"
 	"time"
 
+	"ServerInterceptor"
 	"msdb"
 
 	"proto"
@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	interceptor := Server_interceptor.NewAuthInterceptor(jwtManager)
+	interceptor := ServerInterceptor.NewAuthInterceptor(jwtManager)
 	srv := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 	)

@@ -7,7 +7,7 @@ type User struct {
 }
 
 // NewUser returns a new user
-func NewUser(username string, password string, id string) (*User, error) {
+func NewUser(username string, id string) (*User, error) {
 
 	user := &User{
 		Username: username,
