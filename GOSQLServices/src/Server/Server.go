@@ -43,6 +43,7 @@ func main() {
 
 }
 
+//OAuthInfo stores data returned by Google OAuth
 type OAuthInfo struct {
 	ID            string `json:"id"`
 	Email         string `json:"email"`
@@ -108,26 +109,9 @@ func getUserInfoAndJWTAccessToken(state string, code string) (string, error) {
 	return jwttoken, nil
 }
 
-func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Response, error) {
-	fName, lName, email := request.GetFirstName(), request.GetLastName(), request.GetEmail()
-	fmt.Println(fName, lName, email)
-	var db *sql.DB
-	db = msdb.ConnectDatabase()
-	defer db.Close()
-
-	createID, err := msdb.AddUser(db, fName, lName, email)
-	if err != nil {
-		log.Println("Error creating user: ", err.Error())
-	}
-	var response string
-	response = fmt.Sprintf("Inserted ID: %d successfully.\n", createID)
-	return &proto.Response{Resp: response}, nil
-
-}
-
 func (s *server) Login(ctx context.Context, request *proto.LoginRequest) (*proto.Token, error) {
 	state, authcode := request.GetState(), request.GetAuthcode()
-	fmt.Println("state =  %s, authcode = %s", state, authcode)
+	fmt.Printf("state =  %s, authcode = %s\n", state, authcode)
 	accessToken, err := getUserInfoAndJWTAccessToken(state, authcode)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get accessToken : %s", err.Error())
@@ -138,17 +122,176 @@ func (s *server) Login(ctx context.Context, request *proto.LoginRequest) (*proto
 	return res, nil
 }
 
-func (s *server) ReadUsers(ctx context.Context, request *proto.Khali) (*proto.Response, error) {
+func (s *server) ReadUsers(ctx context.Context, request *proto.Khali) (*proto.StringResponse, error) {
 
 	var db *sql.DB
 	db = msdb.ConnectDatabase()
 	defer db.Close()
 
-	response, createID, err := msdb.ReadUsers(db)
+	response, countID, err := msdb.ReadUsers(db)
 	if err != nil {
 		log.Println("Error reading Employees: ", err.Error())
 	}
-	fmt.Printf("Read %d ID's successfully.\n", createID)
-	return &proto.Response{Resp: response}, nil
+	fmt.Printf("Read %d ID's successfully.\n", countID)
+	return &proto.StringResponse{Status: response}, nil
+}
 
+func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Response, error) {
+	fName, lName, email, bio, profilePicture := request.GetFirstName(), request.GetLastName(), request.GetEmail(),
+		request.GetBio(), request.GetProfilePicture()
+	fmt.Println(fName, lName, email, bio, email)
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddUser(db, fName, lName, email, bio, profilePicture)
+	if err != nil {
+		log.Println("Error creating user: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+
+}
+
+func (s *server) AddDownvotes(ctx context.Context, request *proto.Downvotes) (*proto.Response, error) {
+	id, downvotes := request.GetAnswerId(), request.GetDownvotes()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddDownvotes(db, id, downvotes)
+	if err != nil {
+		log.Println("Error Adding Downvotes: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) AddKudos(ctx context.Context, request *proto.Kudos) (*proto.Response, error) {
+	id, kudos := request.GetAnswerId(), request.GetKudos()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddKudos(db, id, kudos)
+	if err != nil {
+		log.Println("Error Adding Kudos: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) AddAnswer(ctx context.Context, request *proto.NewAnswer) (*proto.Response, error) {
+	answerText, questionID, userID := request.GetAnswerText(), request.GetQuestionId(), request.GetUserId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddAnswer(db, answerText, questionID, userID)
+	if err != nil {
+		log.Println("Error Adding Answer: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) AddQuestion(ctx context.Context, request *proto.NewQuestion) (*proto.Response, error) {
+	questionTitle, questionDetails, posterID, topicID := request.GetQuestionTitle(), request.GetQuestionDetails(),
+		request.GetPosterId(), request.GetTopicId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddQuestion(db, questionTitle, questionDetails, posterID, topicID)
+	if err != nil {
+		log.Println("Error Adding Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) AddTopic(ctx context.Context, request *proto.NewTopic) (*proto.Response, error) {
+	topicName := request.GetTopicName()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.AddTopic(db, topicName)
+	if err != nil {
+		log.Println("Error Adding Topic: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) FollowQuestion(ctx context.Context, request *proto.FollowQuestionRequest) (*proto.Response, error) {
+	followerID, questionID := request.GetFollowerId(), request.GetQuestionId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.FollowQuestion(db, followerID, questionID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) FollowTopic(ctx context.Context, request *proto.FollowTopicRequest) (*proto.Response, error) {
+	followerID, topicID := request.GetFollowerId(), request.GetTopicId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.FollowTopic(db, followerID, topicID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) FollowUser(ctx context.Context, request *proto.FollowUserRequest) (*proto.Response, error) {
+	followerID, userID := request.GetFollowerId(), request.GetFollowedUserId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.FollowQuestion(db, followerID, userID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) UnfollowQuestion(ctx context.Context, request *proto.FollowQuestionRequest) (*proto.Response, error) {
+	followerID, questionID := request.GetFollowerId(), request.GetQuestionId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.UnfollowQuestion(db, followerID, questionID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) UnfollowTopic(ctx context.Context, request *proto.FollowTopicRequest) (*proto.Response, error) {
+	followerID, topicID := request.GetFollowerId(), request.GetTopicId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.UnfollowTopic(db, followerID, topicID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
+}
+
+func (s *server) UnfollowUser(ctx context.Context, request *proto.FollowUserRequest) (*proto.Response, error) {
+	followerID, userID := request.GetFollowerId(), request.GetFollowedUserId()
+	var db *sql.DB
+	db = msdb.ConnectDatabase()
+	defer db.Close()
+
+	status, err := msdb.UnfollowQuestion(db, followerID, userID)
+	if err != nil {
+		log.Println("Error Following Question: ", err.Error())
+	}
+	return &proto.Response{Status: status}, nil
 }

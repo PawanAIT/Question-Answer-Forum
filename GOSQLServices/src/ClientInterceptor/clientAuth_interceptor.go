@@ -42,10 +42,8 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryClientInterceptor {
 		if interceptor.authMethods[method] {
 			log.Printf("Method found %s", method)
 			return invoker(interceptor.attachToken(ctx), method, req, reply, cc, opts...)
-		} else {
-			log.Printf("Method Not found %s", method)
 		}
-
+		log.Printf("Method Not found %s", method)
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
