@@ -239,7 +239,7 @@ func (s *server) FollowTopic(ctx context.Context, request *proto.FollowTopicRequ
 
 	status, err := msdb.FollowTopic(db, followerID, topicID)
 	if err != nil {
-		log.Println("Error Following Question: ", err.Error())
+		log.Println("Error Following Topic: ", err.Error())
 	}
 	return &proto.Response{Status: status}, nil
 }
@@ -250,9 +250,9 @@ func (s *server) FollowUser(ctx context.Context, request *proto.FollowUserReques
 	db = msdb.ConnectDatabase()
 	defer db.Close()
 
-	status, err := msdb.FollowQuestion(db, followerID, userID)
+	status, err := msdb.FollowUser(db, followerID, userID)
 	if err != nil {
-		log.Println("Error Following Question: ", err.Error())
+		log.Println("Error Following User: ", err.Error())
 	}
 	return &proto.Response{Status: status}, nil
 }
@@ -265,7 +265,7 @@ func (s *server) UnfollowQuestion(ctx context.Context, request *proto.FollowQues
 
 	status, err := msdb.UnfollowQuestion(db, followerID, questionID)
 	if err != nil {
-		log.Println("Error Following Question: ", err.Error())
+		log.Println("Error Unfollowing Question: ", err.Error())
 	}
 	return &proto.Response{Status: status}, nil
 }
@@ -278,7 +278,7 @@ func (s *server) UnfollowTopic(ctx context.Context, request *proto.FollowTopicRe
 
 	status, err := msdb.UnfollowTopic(db, followerID, topicID)
 	if err != nil {
-		log.Println("Error Following Question: ", err.Error())
+		log.Println("Error Unfollowing Topic: ", err.Error())
 	}
 	return &proto.Response{Status: status}, nil
 }
@@ -289,9 +289,9 @@ func (s *server) UnfollowUser(ctx context.Context, request *proto.FollowUserRequ
 	db = msdb.ConnectDatabase()
 	defer db.Close()
 
-	status, err := msdb.UnfollowQuestion(db, followerID, userID)
+	status, err := msdb.UnfollowUser(db, followerID, userID)
 	if err != nil {
-		log.Println("Error Following Question: ", err.Error())
+		log.Println("Error Unfollowing User: ", err.Error())
 	}
 	return &proto.Response{Status: status}, nil
 }

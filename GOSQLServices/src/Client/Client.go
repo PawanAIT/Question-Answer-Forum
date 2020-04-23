@@ -29,9 +29,9 @@ func authMethods() map[string]bool {
 		path + "FollowQuestion":   true,
 		path + "FollowTopic":      true,
 		path + "FollowUser":       true,
-		path + "UnFollowQuestion": true,
-		path + "UnFollowTopic":    true,
-		path + "UnFollowUser":     true,
+		path + "UnfollowQuestion": true,
+		path + "UnfollowTopic":    true,
+		path + "UnfollowUser":     true,
 	}
 }
 
