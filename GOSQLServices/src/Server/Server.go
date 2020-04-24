@@ -133,7 +133,7 @@ func (s *server) ReadUsers(ctx context.Context, request *proto.Khali) (*proto.St
 		log.Println("Error reading Employees: ", err.Error())
 	}
 	fmt.Printf("Read %d ID's successfully.\n", countID)
-	return &proto.StringResponse{Status: response}, nil
+	return &proto.StringResponse{Response: response}, nil
 }
 
 func (s *server) AddUser(ctx context.Context, request *proto.User) (*proto.Response, error) {

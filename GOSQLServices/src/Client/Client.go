@@ -109,14 +109,14 @@ func main() {
 
 		if response, err := Client.ReadUsers(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
-				"result": response.Status,
+				"result": response.Response,
 			})
 		} else {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 	})
 
-	g.GET("/addUser/:a/:b/:c/:d/:e", func(ctx *gin.Context) {
+	g.POST("/addUser/:a/:b/:c/:d/:e", func(ctx *gin.Context) {
 		req := &proto.User{FirstName: ctx.Param("a"), LastName: ctx.Param("b"), Email: ctx.Param("c"), Bio: ctx.Param("d"), ProfilePicture: ctx.Param("e")}
 		if response, err := Client.AddUser(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
@@ -127,7 +127,7 @@ func main() {
 		}
 	})
 
-	g.GET("/addDownvotes/:a/:b", func(ctx *gin.Context) {
+	g.PATCH("/addDownvotes/:a/:b", func(ctx *gin.Context) {
 		var id, downvotes int64
 		if id, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -145,7 +145,7 @@ func main() {
 		}
 	})
 
-	g.GET("/addKudos/:a/:b", func(ctx *gin.Context) {
+	g.PATCH("/addKudos/:a/:b", func(ctx *gin.Context) {
 		var id, kudos int64
 		if id, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -163,7 +163,7 @@ func main() {
 		}
 	})
 
-	g.GET("/addAnswer/:a/:b/:c", func(ctx *gin.Context) {
+	g.POST("/addAnswer/:a/:b/:c", func(ctx *gin.Context) {
 		var questionID, userID int64
 		var answer string
 		if questionID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
@@ -183,7 +183,7 @@ func main() {
 		}
 	})
 
-	g.GET("/addQuestion/:a/:b/:c/:d", func(ctx *gin.Context) {
+	g.POST("/addQuestion/:a/:b/:c/:d", func(ctx *gin.Context) {
 		var posterID, topicID int64
 		var questionTitle, questionDetails string
 		if posterID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
@@ -204,7 +204,7 @@ func main() {
 		}
 	})
 
-	g.GET("/addTopic/:a", func(ctx *gin.Context) {
+	g.POST("/addTopic/:a", func(ctx *gin.Context) {
 		var topicName string
 		topicName = ctx.Param("a")
 		req := &proto.NewTopic{TopicName: topicName}
@@ -217,7 +217,7 @@ func main() {
 		}
 	})
 
-	g.GET("/followQuestion/:a/:b", func(ctx *gin.Context) {
+	g.PUT("/followQuestion/:a/:b", func(ctx *gin.Context) {
 		var followerID, questionID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -235,7 +235,7 @@ func main() {
 		}
 	})
 
-	g.GET("/followTopic/:a/:b", func(ctx *gin.Context) {
+	g.PUT("/followTopic/:a/:b", func(ctx *gin.Context) {
 		var followerID, topicID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -253,7 +253,7 @@ func main() {
 		}
 	})
 
-	g.GET("/followUser/:a/:b", func(ctx *gin.Context) {
+	g.PUT("/followUser/:a/:b", func(ctx *gin.Context) {
 		var followerID, followedUserID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -271,7 +271,7 @@ func main() {
 		}
 	})
 
-	g.GET("/unfollowQuestion/:a/:b", func(ctx *gin.Context) {
+	g.DELETE("/unfollowQuestion/:a/:b", func(ctx *gin.Context) {
 		var followerID, questionID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -289,7 +289,7 @@ func main() {
 		}
 	})
 
-	g.GET("/unfollowTopic/:a/:b", func(ctx *gin.Context) {
+	g.DELETE("/unfollowTopic/:a/:b", func(ctx *gin.Context) {
 		var followerID, topicID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
@@ -307,7 +307,7 @@ func main() {
 		}
 	})
 
-	g.GET("/unfollowUser/:a/:b", func(ctx *gin.Context) {
+	g.DELETE("/unfollowUser/:a/:b", func(ctx *gin.Context) {
 		var followerID, followedUserID int64
 		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
 			panic(err)
