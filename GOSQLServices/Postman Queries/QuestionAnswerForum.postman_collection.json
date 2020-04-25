@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "6a9c71b2-9525-4ecb-aa62-1bd5587f7dcf",
+		"name": "QuestionAnswerForum",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Show",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/show",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"show"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addUser/test/object/test1@gmail.com/bio_here/profile_here",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addUser",
+						"test",
+						"object",
+						"test1@gmail.com",
+						"bio_here",
+						"profile_here"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Downvotes",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addDownvotes/1/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addDownvotes",
+						"1",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add kudos",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addKudos/1/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addKudos",
+						"1",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addQuestion/23/2/Thisisaquestion/TheseAreDetails",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addQuestion",
+						"23",
+						"2",
+						"Thisisaquestion",
+						"TheseAreDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Topic",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addTopic/Test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addTopic",
+						"Test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Answer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/addAnswer/2/23/AnswerIsHere",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addAnswer",
+						"2",
+						"23",
+						"AnswerIsHere"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowQuestion",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/followQuestion/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"followQuestion",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UnfollowQuestion",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/unfollowQuestion/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"unfollowQuestion",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowUser",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/followUser/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"followUser",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowQuestion Copy Copy Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/unfollowUser/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"unfollowUser",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowTopic",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/followTopic/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"followTopic",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowQuestion Copy Copy Copy Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/unfollowTopic/23/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"unfollowTopic",
+						"23",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey"
+	},
+	"protocolProfileBehavior": {}
+}

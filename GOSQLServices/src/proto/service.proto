@@ -1,3 +1,5 @@
+//Install Protoc in Ubuntu using "sudo snap install protobuf --classic"
+//Compile Using "protoc --go_out=plugins=grpc:. service.proto" 
 syntax = "proto3";
 
 package proto;
@@ -6,14 +8,62 @@ message User {
   string first_name = 1;
   string last_name = 2;
   string email = 3;
+  string bio = 4;
+  string profile_picture = 5;
 }
 
 message Khali {
 
 }
 
+message Downvotes{
+  int64 answer_id = 1;
+  int64 downvotes = 2;
+}
+
+message Kudos{
+  int64 answer_id = 1;
+  int64 kudos = 2;
+}
+
+message NewAnswer{
+  string answerText = 1;
+  int64 user_id = 2;
+  int64 question_id = 3;
+}
+
+message NewQuestion{
+  string question_title = 1;
+  string question_details = 2;
+  int64 poster_id = 3;
+  int64 topic_id = 4;
+}
+
+message NewTopic{
+  string topic_name = 1;
+}
+
+message FollowQuestionRequest{
+  int64 follower_id = 1;
+  int64 question_id = 2;
+}
+
+message FollowTopicRequest{
+  int64 follower_id = 1;
+  int64 topic_id = 2;
+}
+
+message FollowUserRequest{
+  int64 follower_id = 1;
+  int64 followed_user_id = 2;
+}
+
+message StringResponse{
+  string response = 1;
+}
+
 message Response{
-  string resp = 1;
+  bool status = 1;
 }
 
 message Token{
@@ -26,7 +76,18 @@ message LoginRequest{
 }
 
 service AddService {
-  rpc AddUser(User) returns (Response);
-  rpc ReadUsers(Khali) returns (Response);
   rpc Login(LoginRequest) returns (Token);
+  rpc ReadUsers(Khali) returns (StringResponse);
+  rpc AddUser(User) returns (Response);
+  rpc AddDownvotes(Downvotes) returns (Response);
+  rpc AddKudos(Kudos) returns (Response);
+  rpc AddAnswer(NewAnswer) returns (Response);
+  rpc AddQuestion(NewQuestion) returns (Response);
+  rpc AddTopic(NewTopic) returns (Response);
+  rpc FollowQuestion(FollowQuestionRequest) returns (Response);
+  rpc FollowTopic(FollowTopicRequest) returns (Response);
+  rpc FollowUser(FollowUserRequest) returns (Response);
+  rpc UnfollowQuestion(FollowQuestionRequest) returns (Response);
+  rpc UnfollowTopic(FollowTopicRequest) returns (Response);
+  rpc UnfollowUser(FollowUserRequest) returns (Response);
 }

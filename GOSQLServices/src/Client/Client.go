@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"proto"
+	"strconv"
 
 	"ClientInterceptor"
 
@@ -17,9 +18,20 @@ import (
 func authMethods() map[string]bool {
 	const path = "/proto.AddService/"
 	return map[string]bool{
-		path + "AddUser":   true,
-		path + "ReadUsers": true,
-		path + "Login":     true,
+		path + "Login":            true,
+		path + "ReadUsers":        true,
+		path + "AddUser":          true,
+		path + "AddDownvotes":     true,
+		path + "AddKudos":         true,
+		path + "AddAnswer":        true,
+		path + "AddQuestion":      true,
+		path + "AddTopic":         true,
+		path + "FollowQuestion":   true,
+		path + "FollowTopic":      true,
+		path + "FollowUser":       true,
+		path + "UnfollowQuestion": true,
+		path + "UnfollowTopic":    true,
+		path + "UnfollowUser":     true,
 	}
 }
 
@@ -92,23 +104,221 @@ func main() {
 		}
 	})
 
-	g.GET("/add/:a/:b/:c", func(ctx *gin.Context) {
-		req := &proto.User{FirstName: ctx.Param("a"), LastName: ctx.Param("b"), Email: ctx.Param("c")}
-		if response, err := Client.AddUser(ctx, req); err == nil {
+	g.GET("/show", func(ctx *gin.Context) {
+		req := &proto.Khali{}
+
+		if response, err := Client.ReadUsers(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
-				"result": response.Resp,
+				"result": response.Response,
 			})
 		} else {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 	})
 
-	g.GET("/show", func(ctx *gin.Context) {
-		req := &proto.Khali{}
-
-		if response, err := Client.ReadUsers(ctx, req); err == nil {
+	g.POST("/addUser/:a/:b/:c/:d/:e", func(ctx *gin.Context) {
+		req := &proto.User{FirstName: ctx.Param("a"), LastName: ctx.Param("b"), Email: ctx.Param("c"), Bio: ctx.Param("d"), ProfilePicture: ctx.Param("e")}
+		if response, err := Client.AddUser(ctx, req); err == nil {
 			ctx.JSON(http.StatusOK, gin.H{
-				"result": response.Resp,
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.PATCH("/addDownvotes/:a/:b", func(ctx *gin.Context) {
+		var id, downvotes int64
+		if id, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if downvotes, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.Downvotes{AnswerId: id, Downvotes: downvotes}
+		if response, err := Client.AddDownvotes(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.PATCH("/addKudos/:a/:b", func(ctx *gin.Context) {
+		var id, kudos int64
+		if id, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if kudos, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.Kudos{AnswerId: id, Kudos: kudos}
+		if response, err := Client.AddKudos(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.POST("/addAnswer/:a/:b/:c", func(ctx *gin.Context) {
+		var questionID, userID int64
+		var answer string
+		if questionID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if userID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		answer = ctx.Param("c")
+		req := &proto.NewAnswer{AnswerText: answer, UserId: userID, QuestionId: questionID}
+		if response, err := Client.AddAnswer(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.POST("/addQuestion/:a/:b/:c/:d", func(ctx *gin.Context) {
+		var posterID, topicID int64
+		var questionTitle, questionDetails string
+		if posterID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if topicID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		questionTitle = ctx.Param("c")
+		questionDetails = ctx.Param("d")
+		req := &proto.NewQuestion{PosterId: posterID, TopicId: topicID, QuestionTitle: questionTitle, QuestionDetails: questionDetails}
+		if response, err := Client.AddQuestion(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.POST("/addTopic/:a", func(ctx *gin.Context) {
+		var topicName string
+		topicName = ctx.Param("a")
+		req := &proto.NewTopic{TopicName: topicName}
+		if response, err := Client.AddTopic(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.PUT("/followQuestion/:a/:b", func(ctx *gin.Context) {
+		var followerID, questionID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if questionID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowQuestionRequest{FollowerId: followerID, QuestionId: questionID}
+		if response, err := Client.FollowQuestion(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.PUT("/followTopic/:a/:b", func(ctx *gin.Context) {
+		var followerID, topicID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if topicID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowTopicRequest{FollowerId: followerID, TopicId: topicID}
+		if response, err := Client.FollowTopic(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.PUT("/followUser/:a/:b", func(ctx *gin.Context) {
+		var followerID, followedUserID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if followedUserID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowUserRequest{FollowerId: followerID, FollowedUserId: followedUserID}
+		if response, err := Client.FollowUser(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.DELETE("/unfollowQuestion/:a/:b", func(ctx *gin.Context) {
+		var followerID, questionID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if questionID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowQuestionRequest{FollowerId: followerID, QuestionId: questionID}
+		if response, err := Client.UnfollowQuestion(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.DELETE("/unfollowTopic/:a/:b", func(ctx *gin.Context) {
+		var followerID, topicID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if topicID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowTopicRequest{FollowerId: followerID, TopicId: topicID}
+		if response, err := Client.UnfollowTopic(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
+			})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	})
+
+	g.DELETE("/unfollowUser/:a/:b", func(ctx *gin.Context) {
+		var followerID, followedUserID int64
+		if followerID, err = strconv.ParseInt(ctx.Param("a"), 10, 64); err != nil {
+			panic(err)
+		}
+		if followedUserID, err = strconv.ParseInt(ctx.Param("b"), 10, 64); err != nil {
+			panic(err)
+		}
+		req := &proto.FollowUserRequest{FollowerId: followerID, FollowedUserId: followedUserID}
+		if response, err := Client.UnfollowUser(ctx, req); err == nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"result": response.Status,
 			})
 		} else {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -3,7 +3,6 @@ package msdb
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 
@@ -42,12 +41,6 @@ func ConnectDatabase() *sql.DB {
 func ReadUsers(db *sql.DB) (string, int64, error) {
 	ctx := context.Background()
 
-	// Check if database is alive.
-	err := db.PingContext(ctx)
-	if err != nil {
-		return "", -1, err
-	}
-
 	tsql := fmt.Sprintf("SELECT user_id, first_name, last_name, email FROM Users;")
 
 	// Execute query
@@ -70,7 +63,7 @@ func ReadUsers(db *sql.DB) (string, int64, error) {
 			return "", -1, err
 		}
 
-		resp += fmt.Sprintf("ID: %d, Name: %s %s, Email: %s\n", id, firstName, lastName, email)
+		resp += fmt.Sprintf("ID: %d, Name: %s %s, Email: %s||", id, firstName, lastName, email)
 		count++
 	}
 
@@ -78,212 +71,204 @@ func ReadUsers(db *sql.DB) (string, int64, error) {
 }
 
 // AddUser adds a user
-func AddUser(db *sql.DB, firstName string, lastName string, email string) (int64, error) {
+func AddUser(db *sql.DB, firstName string, lastName string, email string, bio string, profilePicture string) (bool, error) {
 	ctx := context.Background()
 	var err error
 
-	if db == nil {
-		err = errors.New("db is null")
-		return -1, err
-	}
-
-	// Check if database is alive.
-	err = db.PingContext(ctx)
-	if err != nil {
-		return -1, err
-	}
-
-	var blank = "aa"
-	res, err := db.ExecContext(ctx, "sp_Insert_User_Details",
+	_, err = db.ExecContext(ctx, "sp_Insert_User_Details",
 		sql.Named("first_name", firstName),
 		sql.Named("last_name", lastName),
 		sql.Named("email", email),
-		sql.Named("bio", blank),
-		sql.Named("profile_picture", blank),
+		sql.Named("bio", bio),
+		sql.Named("profile_picture", profilePicture),
 	)
 	if err != nil {
-		return -1, err
+		return false, err
 	}
 
-	/*tsql := "INSERT INTO Users (first_name, last_name, email) VALUES (@first_name, @last_name, @email);" // select convert(bigint, SCOPE_IDENTITY());"
-
-	stmt, err := db.Prepare(tsql)
-	if err != nil {
-		return -1, err
-	}
-
-	row := stmt.QueryRowContext(
-		ctx,
-		sql.Named("first_name", firstName),
-		sql.Named("last_name", lastName),
-		sql.Named("email", email))
-
-	var newID int64
-	err = row.Scan(&newID)
-	if err != nil {
-		return -1, err
-	}*/
-
-	var newID int64
-	newID, err = res.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-	return newID, nil
+	return true, nil
 }
 
-/*func main() {
-
-	 Create employee
-	createID, err := CreateEmployee("Jake", "United States")
-	if err != nil {
-		log.Fatal("Error creating Employee: ", err.Error())
-	}
-	fmt.Printf("Inserted ID: %d successfully.\n", createID)
-
-	// Read employees
-	count, err := ReadEmployees()
-	if err != nil {
-		log.Fatal("Error reading Employees: ", err.Error())
-	}
-	fmt.Printf("Read %d row(s) successfully.\n", count)
-
-	// Update from database
-	updatedRows, err := UpdateEmployee("Jake", "Poland")
-	if err != nil {
-		log.Fatal("Error updating Employee: ", err.Error())
-	}
-	fmt.Printf("Updated %d row(s) successfully.\n", updatedRows)
-
-	// Delete from database
-	deletedRows, err := DeleteEmployee("Jake")
-	if err != nil {
-		log.Fatal("Error deleting Employee: ", err.Error())
-	}
-	fmt.Printf("Deleted %d row(s) successfully.\n", deletedRows)
-
-}*/
-
-/*// CreateEmployee inserts an employee record
-func CreateEmployee(name string, location string) (int64, error) {
+// AddDownvotes adds downvotes
+func AddDownvotes(db *sql.DB, id int64, downvotes int64) (bool, error) {
 	ctx := context.Background()
 	var err error
 
-	if db == nil {
-		err = errors.New("CreateEmployee: db is null")
-		return -1, err
-	}
-
-	// Check if database is alive.
-	err = db.PingContext(ctx)
+	_, err = db.ExecContext(ctx, "sp_Add_Downvotes_To_Answer",
+		sql.Named("answer_id", id),
+		sql.Named("downvotes_to_add", downvotes),
+	)
 	if err != nil {
-		return -1, err
+		return false, err
 	}
 
-	tsql := "INSERT INTO TestSchema.Employees (Name, Location) VALUES (@Name, @Location); select convert(bigint, SCOPE_IDENTITY());"
-
-	stmt, err := db.Prepare(tsql)
-	if err != nil {
-		return -1, err
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRowContext(
-		ctx,
-		sql.Named("Name", name),
-		sql.Named("Location", location))
-	var newID int64
-	err = row.Scan(&newID)
-	if err != nil {
-		return -1, err
-	}
-
-	return newID, nil
+	return true, nil
 }
 
-// ReadEmployees reads all employee records
-func ReadEmployees() (int, error) {
+/*		path + "FollowTopic":      true,
+		path + "FollowUser":       true,
+		path + "UnFollowQuestion": true,
+		path + "UnFollowTopic":    true,
+		path + "UnFollowUser":     true,*/
+
+// AddKudos adds a Kudos
+func AddKudos(db *sql.DB, id int64, kudos int64) (bool, error) {
 	ctx := context.Background()
+	var err error
 
-	// Check if database is alive.
-	err := db.PingContext(ctx)
+	_, err = db.ExecContext(ctx, "sp_Add_Kudos_To_Answer",
+		sql.Named("answer_id", id),
+		sql.Named("kudos_to_add", kudos),
+	)
 	if err != nil {
-		return -1, err
+		return false, err
 	}
 
-	tsql := fmt.Sprintf("SELECT Id, Name, Location FROM TestSchema.Employees;")
-
-	// Execute query
-	rows, err := db.QueryContext(ctx, tsql)
-	if err != nil {
-		return -1, err
-	}
-
-	defer rows.Close()
-
-	var count int
-
-	// Iterate through the result set.
-	for rows.Next() {
-		var name, location string
-		var id int
-
-		// Get values from row.
-		err := rows.Scan(&id, &name, &location)
-		if err != nil {
-			return -1, err
-		}
-
-		fmt.Printf("ID: %d, Name: %s, Location: %s\n", id, name, location)
-		count++
-	}
-
-	return count, nil
+	return true, nil
 }
 
-// UpdateEmployee updates an employee's information
-func UpdateEmployee(name string, location string) (int64, error) {
+// AddAnswer adds an answer
+func AddAnswer(db *sql.DB, answerText string, questionID int64, userID int64) (bool, error) {
 	ctx := context.Background()
+	var err error
 
-	// Check if database is alive.
-	err := db.PingContext(ctx)
+	_, err = db.ExecContext(ctx, "sp_Insert_Answer",
+		sql.Named("answer_text", answerText),
+		sql.Named("answer_poster_id", questionID),
+		sql.Named("question_id", userID),
+	)
 	if err != nil {
-		return -1, err
+		return false, err
 	}
 
-	tsql := fmt.Sprintf("UPDATE TestSchema.Employees SET Location = @Location WHERE Name = @Name")
-
-	// Execute non-query with named parameters
-	result, err := db.ExecContext(
-		ctx,
-		tsql,
-		sql.Named("Location", location),
-		sql.Named("Name", name))
-	if err != nil {
-		return -1, err
-	}
-
-	return result.RowsAffected()
+	return true, nil
 }
 
-// DeleteEmployee deletes an employee from the database
-func DeleteEmployee(name string) (int64, error) {
+// AddQuestion adds a question
+func AddQuestion(db *sql.DB, questionTitle string, questionDetails string, posterID int64, topicID int64) (bool, error) {
 	ctx := context.Background()
+	var err error
 
-	// Check if database is alive.
-	err := db.PingContext(ctx)
+	_, err = db.ExecContext(ctx, "sp_Insert_Question",
+		sql.Named("question_title", questionTitle),
+		sql.Named("question_details", questionDetails),
+		sql.Named("question_poster_id", posterID),
+		sql.Named("question_topic_id", topicID),
+	)
 	if err != nil {
-		return -1, err
+		return false, err
 	}
 
-	tsql := fmt.Sprintf("DELETE FROM TestSchema.Employees WHERE Name = @Name;")
-
-	// Execute non-query with named parameters
-	result, err := db.ExecContext(ctx, tsql, sql.Named("Name", name))
-	if err != nil {
-		return -1, err
-	}
-
-	return result.RowsAffected()
+	return true, nil
 }
-*/
+
+// AddTopic adds a topic
+func AddTopic(db *sql.DB, topic string) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Insert_Topic",
+		sql.Named("topic_name", topic),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// FollowQuestion Adds a follow connection
+func FollowQuestion(db *sql.DB, followerID int64, questionID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Follow_Question",
+		sql.Named("follower_user_id", followerID),
+		sql.Named("followed_question_id", questionID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// FollowUser Adds a follow connection
+func FollowUser(db *sql.DB, followerID int64, userID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Follow_User",
+		sql.Named("follower_user_id", followerID),
+		sql.Named("followed_user_id", userID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// FollowTopic Adds a follow connection
+func FollowTopic(db *sql.DB, followerID int64, topicID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Follow_Topic",
+		sql.Named("follower_user_id", followerID),
+		sql.Named("followed_topic_id", topicID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UnfollowQuestion Adds an unfollow connection
+func UnfollowQuestion(db *sql.DB, followerID int64, questionID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Unfollow_Question",
+		sql.Named("unfollower_user_id", followerID),
+		sql.Named("unfollowed_question_id", questionID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UnfollowTopic Adds an unfollow connection
+func UnfollowTopic(db *sql.DB, followerID int64, topicID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Unfollow_Topic",
+		sql.Named("unfollower_user_id", followerID),
+		sql.Named("unfollowed_topic_id", topicID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UnfollowUser Adds an unfollow connection
+func UnfollowUser(db *sql.DB, followerID int64, userID int64) (bool, error) {
+	ctx := context.Background()
+	var err error
+
+	_, err = db.ExecContext(ctx, "sp_Unfollow_User",
+		sql.Named("unfollower_user_id", followerID),
+		sql.Named("unfollowed_user_id", userID),
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

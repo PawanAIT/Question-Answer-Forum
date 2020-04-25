@@ -8,7 +8,7 @@ BEGIN
     SET NOCOUNT ON; 
     BEGIN TRY
         BEGIN TRAN
-            INSERT INTO [dbo].[follow_topic] (follower_user_id, followed_topic_id) values (@followed_topic_id,@follower_user_id);
+            INSERT INTO [dbo].[follow_topic] (follower_user_id, followed_topic_id) values (@follower_user_id,@followed_topic_id);
         COMMIT TRAN
     END TRY
     BEGIN CATCH
