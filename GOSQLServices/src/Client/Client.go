@@ -42,6 +42,7 @@ var (
 )
 
 func init() {
+	gin.SetMode(gin.ReleaseMode)
 	googleOauthConfig = &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/callback",
 		ClientID:     "392376614027-qpuh3t81joaucdt4kcgpq84gbfqrr83f.apps.googleusercontent.com",
@@ -59,7 +60,7 @@ func getInterceptor() (proto.AddServiceClient, error) {
 		panic(err)
 	}
 
-	conn, err := grpc.Dial("localhost:4567", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
+	conn, err := grpc.Dial("0.0.0.0:4567", grpc.WithInsecure(), grpc.WithUnaryInterceptor(interceptor.Unary()))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func getInterceptor() (proto.AddServiceClient, error) {
 
 func main() {
 
-	connectionWithoutInterceptor, err := grpc.Dial("localhost:4567", grpc.WithInsecure())
+	connectionWithoutInterceptor, err := grpc.Dial("0.0.0.0:4567", grpc.WithInsecure())
 	if err != nil {
 		log.Fatal("cannot dial server: ", err)
 	}
