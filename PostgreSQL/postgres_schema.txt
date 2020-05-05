@@ -1,0 +1,508 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
+-- Dumped by pg_dump version 12.2
+
+-- Started on 2020-05-05 13:39:52 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 203 (class 1259 OID 16387)
+-- Name: answers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.answers (
+    answer_id bigint NOT NULL,
+    answer_text character varying NOT NULL,
+    answer_poster_id bigint NOT NULL,
+    question_id bigint NOT NULL,
+    kudos integer DEFAULT 0,
+    downvotes integer DEFAULT 0,
+    answer_created_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    answer_updated_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.answers OWNER TO postgres;
+
+--
+-- TOC entry 202 (class 1259 OID 16385)
+-- Name: answers_answer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.answers ALTER COLUMN answer_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.answers_answer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 205 (class 1259 OID 16401)
+-- Name: comments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.comments (
+    comment_id bigint NOT NULL,
+    comment_text character varying,
+    comment_poster_id bigint,
+    answer_id bigint,
+    comment_created_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    comment_updated_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.comments OWNER TO postgres;
+
+--
+-- TOC entry 204 (class 1259 OID 16399)
+-- Name: comments_comment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.comments ALTER COLUMN comment_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.comments_comment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 16460)
+-- Name: follow_question; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.follow_question (
+    followed_question_id bigint NOT NULL,
+    follower_user_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.follow_question OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16517)
+-- Name: follow_topic; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.follow_topic (
+    followed_topic_id bigint NOT NULL,
+    follower_user_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.follow_topic OWNER TO postgres;
+
+--
+-- TOC entry 213 (class 1259 OID 16482)
+-- Name: follow_user; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.follow_user (
+    follower_user_id bigint NOT NULL,
+    followed_user_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.follow_user OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 16440)
+-- Name: questions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.questions (
+    question_id bigint NOT NULL,
+    question_title character varying(1000) NOT NULL,
+    question_details character varying(4000),
+    question_poster_id bigint NOT NULL,
+    question_topic_id bigint NOT NULL,
+    question_created_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    question_updated_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.questions OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 16438)
+-- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.questions ALTER COLUMN question_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.questions_question_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 215 (class 1259 OID 16500)
+-- Name: topics; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.topics (
+    topic_id bigint NOT NULL,
+    topic_name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.topics OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 16498)
+-- Name: topics_topic_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.topics ALTER COLUMN topic_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.topics_topic_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 216 (class 1259 OID 16507)
+-- Name: user_gave_kudos; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_gave_kudos (
+    user_id bigint NOT NULL,
+    kudos_answer_id bigint NOT NULL,
+    kudos_question_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.user_gave_kudos OWNER TO postgres;
+
+--
+-- TOC entry 208 (class 1259 OID 16427)
+-- Name: user_seen_answers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_seen_answers (
+    user_id bigint NOT NULL,
+    seen_answer_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.user_seen_answers OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 16450)
+-- Name: user_seen_question; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_seen_question (
+    user_id bigint NOT NULL,
+    seen_question_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.user_seen_question OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 16415)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    user_id bigint NOT NULL,
+    first_name character varying NOT NULL,
+    last_name character varying NOT NULL,
+    email character varying NOT NULL,
+    bio character varying(256),
+    profile_picture character varying(500),
+    profile_created_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    profile_updated_datetime timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 206 (class 1259 OID 16413)
+-- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.users_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 2844 (class 2606 OID 16426)
+-- Name: users UC_user_email; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT "UC_user_email" UNIQUE (email);
+
+
+--
+-- TOC entry 2840 (class 2606 OID 16391)
+-- Name: answers answers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.answers
+    ADD CONSTRAINT answers_pkey PRIMARY KEY (answer_id);
+
+
+--
+-- TOC entry 2842 (class 2606 OID 16405)
+-- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (comment_id);
+
+
+--
+-- TOC entry 2857 (class 2606 OID 16464)
+-- Name: follow_question follow_question_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_question
+    ADD CONSTRAINT follow_question_pkey PRIMARY KEY (followed_question_id, follower_user_id);
+
+
+--
+-- TOC entry 2869 (class 2606 OID 16521)
+-- Name: follow_topic follow_topic_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_topic
+    ADD CONSTRAINT follow_topic_pkey PRIMARY KEY (followed_topic_id, follower_user_id);
+
+
+--
+-- TOC entry 2860 (class 2606 OID 16486)
+-- Name: follow_user follow_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_user
+    ADD CONSTRAINT follow_user_pkey PRIMARY KEY (follower_user_id, followed_user_id);
+
+
+--
+-- TOC entry 2851 (class 2606 OID 16448)
+-- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.questions
+    ADD CONSTRAINT questions_pkey PRIMARY KEY (question_id);
+
+
+--
+-- TOC entry 2862 (class 2606 OID 16506)
+-- Name: topics topic_name; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.topics
+    ADD CONSTRAINT topic_name UNIQUE (topic_name);
+
+
+--
+-- TOC entry 2864 (class 2606 OID 16504)
+-- Name: topics topics_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.topics
+    ADD CONSTRAINT topics_pkey PRIMARY KEY (topic_id);
+
+
+--
+-- TOC entry 2866 (class 2606 OID 16511)
+-- Name: user_gave_kudos user_gave_kudos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_gave_kudos
+    ADD CONSTRAINT user_gave_kudos_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 2849 (class 2606 OID 16431)
+-- Name: user_seen_answers user_seen_answers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_seen_answers
+    ADD CONSTRAINT user_seen_answers_pkey PRIMARY KEY (user_id, seen_answer_id);
+
+
+--
+-- TOC entry 2853 (class 2606 OID 16454)
+-- Name: user_seen_question user_seen_question_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_seen_question
+    ADD CONSTRAINT user_seen_question_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 2846 (class 2606 OID 16424)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
+
+
+--
+-- TOC entry 2854 (class 1259 OID 16481)
+-- Name: fki_follow_question_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_follow_question_user_id ON public.follow_question USING btree (follower_user_id);
+
+
+--
+-- TOC entry 2855 (class 1259 OID 16470)
+-- Name: fki_question_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_question_id ON public.follow_question USING btree (followed_question_id);
+
+
+--
+-- TOC entry 2867 (class 1259 OID 16527)
+-- Name: fki_topic_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_topic_id ON public.follow_topic USING btree (followed_topic_id);
+
+
+--
+-- TOC entry 2847 (class 1259 OID 16437)
+-- Name: fki_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_user_id ON public.user_seen_answers USING btree (user_id);
+
+
+--
+-- TOC entry 2858 (class 1259 OID 16497)
+-- Name: fki_user_id1; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_user_id1 ON public.follow_user USING btree (followed_user_id);
+
+
+--
+-- TOC entry 2873 (class 2606 OID 16465)
+-- Name: follow_question question_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_question
+    ADD CONSTRAINT question_id FOREIGN KEY (followed_question_id) REFERENCES public.questions(question_id);
+
+
+--
+-- TOC entry 2877 (class 2606 OID 16522)
+-- Name: follow_topic topic_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_topic
+    ADD CONSTRAINT topic_id FOREIGN KEY (followed_topic_id) REFERENCES public.topics(topic_id);
+
+
+--
+-- TOC entry 2870 (class 2606 OID 16432)
+-- Name: user_seen_answers user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_seen_answers
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 2871 (class 2606 OID 16455)
+-- Name: user_seen_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_seen_question
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(user_id) NOT VALID;
+
+
+--
+-- TOC entry 2872 (class 2606 OID 16471)
+-- Name: follow_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_question
+    ADD CONSTRAINT user_id FOREIGN KEY (follower_user_id) REFERENCES public.users(user_id) NOT VALID;
+
+
+--
+-- TOC entry 2874 (class 2606 OID 16487)
+-- Name: follow_user user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_user
+    ADD CONSTRAINT user_id FOREIGN KEY (follower_user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 2876 (class 2606 OID 16512)
+-- Name: user_gave_kudos user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_gave_kudos
+    ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- TOC entry 2878 (class 2606 OID 16528)
+-- Name: follow_topic user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_topic
+    ADD CONSTRAINT user_id FOREIGN KEY (follower_user_id) REFERENCES public.users(user_id) NOT VALID;
+
+
+--
+-- TOC entry 2875 (class 2606 OID 16492)
+-- Name: follow_user user_id1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.follow_user
+    ADD CONSTRAINT user_id1 FOREIGN KEY (followed_user_id) REFERENCES public.users(user_id);
+
+
+-- Completed on 2020-05-05 13:39:52 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
