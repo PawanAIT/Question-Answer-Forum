@@ -6,7 +6,9 @@ services:
     ports:
       - 5432:5432
     environment: 
+      - POSTGRES_USER=pawan
       - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=QnAForum
     volumes:
       - postgresData:/var/lib/postgresql/data
   pgadmin:
