@@ -1,8 +1,13 @@
-FROM golang:alpine
+FROM golang:alpine AS build-env
 WORKDIR /go/src
 ADD . .
 RUN apk add --no-cache bash
 RUN go build -o Client ./Client/Client.go
 RUN go build -o Server ./Server/Server.go
+
+FROM alpine
+WORKDIR /go/src
+COPY --from=0 /go/src/Client .
+COPY --from=0 /go/src/Server .
 CMD ["./script.sh"]
 EXPOSE 8080

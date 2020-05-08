@@ -4,7 +4,7 @@
 set -m
   
 # Start the server
-./Server/Server &
+./Server &
   
 # Start Client
-./Client/Client
+./Client
