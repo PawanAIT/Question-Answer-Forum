@@ -19,6 +19,9 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=pawan
       - PGADMIN_DEFAULT_PASSWORD=password
+    volumes:
+      - PGadmin:/var/lib/pgadmin
 
 volumes:
-  postgresData: # named volumes can be managed easier using docker-compose
+  postgresData:
+  PGadmin:
