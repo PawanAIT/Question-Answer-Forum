@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+## Manual Specifications for Q&A Forum
+#  Ignore go get files
+GOSQLServices/src/*.com
+GOSQLServices/src/*.org
+GOSQLServices/src/*.in
+
 # User-specific files
 *.rsuser
 *.suo
