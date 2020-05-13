@@ -1,11 +1,46 @@
 --
+-- PostgreSQL database cluster dump
+--
+
+-- Started on 2020-05-13 11:57:27 UTC
+
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+--
+-- Roles
+--
+
+CREATE ROLE pawan;
+ALTER ROLE pawan WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'md5b778a4f5be66a3fc901ffd524bdeac2e';
+CREATE ROLE postgres;
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'md532e12f215ba27cb750c9e093ce4b5127';
+
+
+
+
+
+
+--
+-- Databases
+--
+
+--
+-- Database "template1" dump
+--
+
+\connect template1
+
+--
 -- PostgreSQL database dump
 --
 
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-06 09:57:30 UTC
+-- Started on 2020-05-13 11:57:27 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,12 +53,185 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+-- Completed on 2020-05-13 11:57:27 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "QnAForum" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
+-- Dumped by pg_dump version 12.2
+
+-- Started on 2020-05-13 11:57:27 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3026 (class 1262 OID 16385)
+-- Name: QnAForum; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "QnAForum" WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
+
+
+ALTER DATABASE "QnAForum" OWNER TO postgres;
+
+\connect "QnAForum"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 221 (class 1255 OID 32770)
+-- Name: sp_insert_answer(character varying, bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO answers(answer_text, answer_poster_id, question_id)
+		VALUES(answer_text, answer_poster_id, question_id);
+	 COMMIT;
+END;
+	$$;
+
+
+ALTER PROCEDURE public.sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3027 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: PROCEDURE sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint) IS 'Stored procedure for inserting answer in the db';
+
+
+--
+-- TOC entry 222 (class 1255 OID 32773)
+-- Name: sp_insert_comment(character varying, bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO comments(comment_text, comment_poster_id, answer_id)
+		VALUES(comment_text, comment_poster_id, answer_id);
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3028 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: PROCEDURE sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint) IS 'Stored procedure to insert comments.';
+
+
+--
+-- TOC entry 220 (class 1255 OID 32771)
+-- Name: sp_insert_question(character varying, character varying, bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO questions(question_title, question_details, question_poster_id, question_topic_id)
+		VALUES(question_title, question_details, question_poster_id, question_topic_id);
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3029 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: PROCEDURE sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint) IS 'Stored procedure to insert questions in the database.';
+
+
+--
+-- TOC entry 219 (class 1255 OID 32772)
+-- Name: sp_insert_topic(character varying); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_insert_topic(topic_name character varying)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO topics(topic_name)
+		VALUES(topic_name);
+	 COMMIT;
+END;
+	$$;
+
+
+ALTER PROCEDURE public.sp_insert_topic(topic_name character varying) OWNER TO postgres;
+
+--
+-- TOC entry 3030 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: PROCEDURE sp_insert_topic(topic_name character varying); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_insert_topic(topic_name character varying) IS 'Stored procedure to insert topics in the database.';
+
+
+--
+-- TOC entry 218 (class 1255 OID 16579)
+-- Name: sp_insert_user_details(character varying, character varying, character varying, character varying, character varying); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_insert_user_details(first_name character varying, last_name character varying, email character varying, bio character varying DEFAULT NULL::character varying, profile_picture character varying DEFAULT NULL::character varying)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   INSERT INTO users (first_name, last_name, email, bio, profile_picture)	
+            VALUES(first_name,last_name, email, bio, profile_picture);	
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_insert_user_details(first_name character varying, last_name character varying, email character varying, bio character varying, profile_picture character varying) OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 202 (class 1259 OID 16385)
+-- TOC entry 202 (class 1259 OID 16387)
 -- Name: answers; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -42,7 +250,7 @@ CREATE TABLE public.answers (
 ALTER TABLE public.answers OWNER TO pawan;
 
 --
--- TOC entry 203 (class 1259 OID 16395)
+-- TOC entry 203 (class 1259 OID 16397)
 -- Name: answers_answer_id_seq; Type: SEQUENCE; Schema: public; Owner: pawan
 --
 
@@ -57,7 +265,7 @@ ALTER TABLE public.answers ALTER COLUMN answer_id ADD GENERATED ALWAYS AS IDENTI
 
 
 --
--- TOC entry 204 (class 1259 OID 16397)
+-- TOC entry 204 (class 1259 OID 16399)
 -- Name: comments; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -74,7 +282,7 @@ CREATE TABLE public.comments (
 ALTER TABLE public.comments OWNER TO pawan;
 
 --
--- TOC entry 205 (class 1259 OID 16405)
+-- TOC entry 205 (class 1259 OID 16407)
 -- Name: comments_comment_id_seq; Type: SEQUENCE; Schema: public; Owner: pawan
 --
 
@@ -89,7 +297,7 @@ ALTER TABLE public.comments ALTER COLUMN comment_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 206 (class 1259 OID 16407)
+-- TOC entry 206 (class 1259 OID 16409)
 -- Name: follow_question; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -102,7 +310,7 @@ CREATE TABLE public.follow_question (
 ALTER TABLE public.follow_question OWNER TO pawan;
 
 --
--- TOC entry 207 (class 1259 OID 16410)
+-- TOC entry 207 (class 1259 OID 16412)
 -- Name: follow_topic; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -115,7 +323,7 @@ CREATE TABLE public.follow_topic (
 ALTER TABLE public.follow_topic OWNER TO pawan;
 
 --
--- TOC entry 208 (class 1259 OID 16413)
+-- TOC entry 208 (class 1259 OID 16415)
 -- Name: follow_user; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -128,7 +336,7 @@ CREATE TABLE public.follow_user (
 ALTER TABLE public.follow_user OWNER TO pawan;
 
 --
--- TOC entry 209 (class 1259 OID 16416)
+-- TOC entry 209 (class 1259 OID 16418)
 -- Name: questions; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -146,7 +354,7 @@ CREATE TABLE public.questions (
 ALTER TABLE public.questions OWNER TO pawan;
 
 --
--- TOC entry 210 (class 1259 OID 16424)
+-- TOC entry 210 (class 1259 OID 16426)
 -- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: pawan
 --
 
@@ -161,7 +369,7 @@ ALTER TABLE public.questions ALTER COLUMN question_id ADD GENERATED ALWAYS AS ID
 
 
 --
--- TOC entry 211 (class 1259 OID 16426)
+-- TOC entry 211 (class 1259 OID 16428)
 -- Name: topics; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -174,7 +382,7 @@ CREATE TABLE public.topics (
 ALTER TABLE public.topics OWNER TO pawan;
 
 --
--- TOC entry 212 (class 1259 OID 16429)
+-- TOC entry 212 (class 1259 OID 16431)
 -- Name: topics_topic_id_seq; Type: SEQUENCE; Schema: public; Owner: pawan
 --
 
@@ -189,7 +397,7 @@ ALTER TABLE public.topics ALTER COLUMN topic_id ADD GENERATED ALWAYS AS IDENTITY
 
 
 --
--- TOC entry 213 (class 1259 OID 16431)
+-- TOC entry 213 (class 1259 OID 16433)
 -- Name: user_gave_kudos; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -203,7 +411,7 @@ CREATE TABLE public.user_gave_kudos (
 ALTER TABLE public.user_gave_kudos OWNER TO pawan;
 
 --
--- TOC entry 214 (class 1259 OID 16434)
+-- TOC entry 214 (class 1259 OID 16436)
 -- Name: user_seen_answers; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -216,7 +424,7 @@ CREATE TABLE public.user_seen_answers (
 ALTER TABLE public.user_seen_answers OWNER TO pawan;
 
 --
--- TOC entry 215 (class 1259 OID 16437)
+-- TOC entry 215 (class 1259 OID 16439)
 -- Name: user_seen_question; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -229,7 +437,7 @@ CREATE TABLE public.user_seen_question (
 ALTER TABLE public.user_seen_question OWNER TO pawan;
 
 --
--- TOC entry 216 (class 1259 OID 16440)
+-- TOC entry 216 (class 1259 OID 16442)
 -- Name: users; Type: TABLE; Schema: public; Owner: pawan
 --
 
@@ -248,7 +456,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO pawan;
 
 --
--- TOC entry 217 (class 1259 OID 16448)
+-- TOC entry 217 (class 1259 OID 16450)
 -- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: pawan
 --
 
@@ -263,7 +471,7 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 2868 (class 2606 OID 16451)
+-- TOC entry 2873 (class 2606 OID 16453)
 -- Name: users UC_user_email; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -272,7 +480,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2840 (class 2606 OID 16453)
+-- TOC entry 2845 (class 2606 OID 16455)
 -- Name: answers answers_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -281,7 +489,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2842 (class 2606 OID 16455)
+-- TOC entry 2847 (class 2606 OID 16457)
 -- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -290,7 +498,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2847 (class 2606 OID 16457)
+-- TOC entry 2852 (class 2606 OID 16459)
 -- Name: follow_question follow_question_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -299,7 +507,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2850 (class 2606 OID 16459)
+-- TOC entry 2855 (class 2606 OID 16461)
 -- Name: follow_topic follow_topic_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -308,7 +516,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2853 (class 2606 OID 16461)
+-- TOC entry 2858 (class 2606 OID 16463)
 -- Name: follow_user follow_user_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -317,7 +525,7 @@ ALTER TABLE ONLY public.follow_user
 
 
 --
--- TOC entry 2855 (class 2606 OID 16463)
+-- TOC entry 2860 (class 2606 OID 16465)
 -- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -326,7 +534,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2857 (class 2606 OID 16465)
+-- TOC entry 2862 (class 2606 OID 16467)
 -- Name: topics topic_name; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -335,7 +543,7 @@ ALTER TABLE ONLY public.topics
 
 
 --
--- TOC entry 2859 (class 2606 OID 16467)
+-- TOC entry 2864 (class 2606 OID 16469)
 -- Name: topics topics_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -344,7 +552,7 @@ ALTER TABLE ONLY public.topics
 
 
 --
--- TOC entry 2861 (class 2606 OID 16469)
+-- TOC entry 2866 (class 2606 OID 16471)
 -- Name: user_gave_kudos user_gave_kudos_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -353,7 +561,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2864 (class 2606 OID 16471)
+-- TOC entry 2869 (class 2606 OID 16473)
 -- Name: user_seen_answers user_seen_answers_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -362,7 +570,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2866 (class 2606 OID 16473)
+-- TOC entry 2871 (class 2606 OID 16475)
 -- Name: user_seen_question user_seen_question_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -371,7 +579,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2870 (class 2606 OID 16475)
+-- TOC entry 2875 (class 2606 OID 16477)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -380,7 +588,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2843 (class 1259 OID 16546)
+-- TOC entry 2848 (class 1259 OID 16478)
 -- Name: fki_answer_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -388,7 +596,7 @@ CREATE INDEX fki_answer_id ON public.comments USING btree (answer_id);
 
 
 --
--- TOC entry 2844 (class 1259 OID 16476)
+-- TOC entry 2849 (class 1259 OID 16479)
 -- Name: fki_follow_question_user_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -396,7 +604,7 @@ CREATE INDEX fki_follow_question_user_id ON public.follow_question USING btree (
 
 
 --
--- TOC entry 2845 (class 1259 OID 16477)
+-- TOC entry 2850 (class 1259 OID 16480)
 -- Name: fki_question_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -404,7 +612,7 @@ CREATE INDEX fki_question_id ON public.follow_question USING btree (followed_que
 
 
 --
--- TOC entry 2848 (class 1259 OID 16478)
+-- TOC entry 2853 (class 1259 OID 16481)
 -- Name: fki_topic_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -412,7 +620,7 @@ CREATE INDEX fki_topic_id ON public.follow_topic USING btree (followed_topic_id)
 
 
 --
--- TOC entry 2862 (class 1259 OID 16479)
+-- TOC entry 2867 (class 1259 OID 16482)
 -- Name: fki_user_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -420,7 +628,7 @@ CREATE INDEX fki_user_id ON public.user_seen_answers USING btree (user_id);
 
 
 --
--- TOC entry 2851 (class 1259 OID 16480)
+-- TOC entry 2856 (class 1259 OID 16483)
 -- Name: fki_user_id1; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -428,7 +636,7 @@ CREATE INDEX fki_user_id1 ON public.follow_user USING btree (followed_user_id);
 
 
 --
--- TOC entry 2874 (class 2606 OID 16541)
+-- TOC entry 2878 (class 2606 OID 16484)
 -- Name: comments answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -437,7 +645,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2884 (class 2606 OID 16557)
+-- TOC entry 2888 (class 2606 OID 16489)
 -- Name: user_gave_kudos answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -446,7 +654,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2887 (class 2606 OID 16567)
+-- TOC entry 2891 (class 2606 OID 16494)
 -- Name: user_seen_answers answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -455,7 +663,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2875 (class 2606 OID 16481)
+-- TOC entry 2880 (class 2606 OID 16499)
 -- Name: follow_question question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -464,7 +672,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2872 (class 2606 OID 16531)
+-- TOC entry 2876 (class 2606 OID 16504)
 -- Name: answers question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -473,7 +681,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2885 (class 2606 OID 16562)
+-- TOC entry 2889 (class 2606 OID 16509)
 -- Name: user_gave_kudos question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -482,7 +690,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2889 (class 2606 OID 16572)
+-- TOC entry 2893 (class 2606 OID 16514)
 -- Name: user_seen_question question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -491,7 +699,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2877 (class 2606 OID 16486)
+-- TOC entry 2882 (class 2606 OID 16519)
 -- Name: follow_topic topic_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -500,7 +708,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2882 (class 2606 OID 16552)
+-- TOC entry 2886 (class 2606 OID 16524)
 -- Name: questions topic_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -509,7 +717,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2886 (class 2606 OID 16491)
+-- TOC entry 2892 (class 2606 OID 16529)
 -- Name: user_seen_answers user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -518,7 +726,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2888 (class 2606 OID 16496)
+-- TOC entry 2894 (class 2606 OID 16534)
 -- Name: user_seen_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -527,7 +735,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2876 (class 2606 OID 16501)
+-- TOC entry 2881 (class 2606 OID 16539)
 -- Name: follow_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -536,7 +744,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2879 (class 2606 OID 16506)
+-- TOC entry 2884 (class 2606 OID 16544)
 -- Name: follow_user user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -545,7 +753,7 @@ ALTER TABLE ONLY public.follow_user
 
 
 --
--- TOC entry 2883 (class 2606 OID 16511)
+-- TOC entry 2890 (class 2606 OID 16549)
 -- Name: user_gave_kudos user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -554,7 +762,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2878 (class 2606 OID 16516)
+-- TOC entry 2883 (class 2606 OID 16554)
 -- Name: follow_topic user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -563,7 +771,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2871 (class 2606 OID 16526)
+-- TOC entry 2877 (class 2606 OID 16559)
 -- Name: answers user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -572,7 +780,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2873 (class 2606 OID 16536)
+-- TOC entry 2879 (class 2606 OID 16564)
 -- Name: comments user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -581,7 +789,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2881 (class 2606 OID 16547)
+-- TOC entry 2887 (class 2606 OID 16569)
 -- Name: questions user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -590,7 +798,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2880 (class 2606 OID 16521)
+-- TOC entry 2885 (class 2606 OID 16574)
 -- Name: follow_user user_id1; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -598,9 +806,100 @@ ALTER TABLE ONLY public.follow_user
     ADD CONSTRAINT user_id1 FOREIGN KEY (followed_user_id) REFERENCES public.users(user_id);
 
 
--- Completed on 2020-05-06 09:57:30 UTC
+-- Completed on 2020-05-13 11:57:28 UTC
 
 --
 -- PostgreSQL database dump complete
+--
+
+--
+-- Database "postgres" dump
+--
+
+\connect postgres
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
+-- Dumped by pg_dump version 12.2
+
+-- Started on 2020-05-13 11:57:28 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- Completed on 2020-05-13 11:57:28 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- Database "test" dump
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
+-- Dumped by pg_dump version 12.2
+
+-- Started on 2020-05-13 11:57:28 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2902 (class 1262 OID 16384)
+-- Name: test; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE test WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
+
+
+ALTER DATABASE test OWNER TO postgres;
+
+\connect test
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- Completed on 2020-05-13 11:57:28 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
+-- Completed on 2020-05-13 11:57:28 UTC
+
+--
+-- PostgreSQL database cluster dump complete
 --
 
