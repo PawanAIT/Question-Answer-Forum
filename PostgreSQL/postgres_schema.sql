@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2020-05-18 13:15:31 UTC
+-- Started on 2020-05-18 14:03:36 UTC
 
 SET default_transaction_read_only = off;
 
@@ -40,7 +40,7 @@ ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-18 13:15:31 UTC
+-- Started on 2020-05-18 14:03:36 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -53,7 +53,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-18 13:15:31 UTC
+-- Completed on 2020-05-18 14:03:36 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -70,7 +70,7 @@ SET row_security = off;
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-18 13:15:31 UTC
+-- Started on 2020-05-18 14:03:36 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -107,7 +107,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 231 (class 1255 OID 49161)
+-- TOC entry 230 (class 1255 OID 49161)
 -- Name: add_user_seen_answers(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -200,32 +200,32 @@ COMMENT ON PROCEDURE public.sp_add_follow_user(follower_user_id bigint, followed
 
 
 --
--- TOC entry 229 (class 1255 OID 49159)
+-- TOC entry 231 (class 1255 OID 57351)
 -- Name: sp_add_kudos(bigint, integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
-CREATE PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer)
+CREATE PROCEDURE public.sp_add_kudos(_answer_id bigint, kudos_to_add integer)
     LANGUAGE plpgsql
     AS $$BEGIN
-	UPDATE answers SET answers.kudos = answers.kudos + kudos_to_add
-	    WHERE answers.answer_id = answer_id ;
+	UPDATE answers SET kudos = kudos + kudos_to_add
+	    WHERE answer_id = _answer_id ;
 	 COMMIT;
 END;$$;
 
 
-ALTER PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer) OWNER TO postgres;
+ALTER PROCEDURE public.sp_add_kudos(_answer_id bigint, kudos_to_add integer) OWNER TO postgres;
 
 --
 -- TOC entry 3039 (class 0 OID 0)
--- Dependencies: 229
--- Name: PROCEDURE sp_add_kudos(answer_id bigint, kudos_to_add integer); Type: COMMENT; Schema: public; Owner: postgres
+-- Dependencies: 231
+-- Name: PROCEDURE sp_add_kudos(_answer_id bigint, kudos_to_add integer); Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer) IS 'Stored procedure to add kudos to user.';
+COMMENT ON PROCEDURE public.sp_add_kudos(_answer_id bigint, kudos_to_add integer) IS 'Stored procedure to add kudos to answer.';
 
 
 --
--- TOC entry 230 (class 1255 OID 49160)
+-- TOC entry 229 (class 1255 OID 49160)
 -- Name: sp_add_user_seen_question(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -1021,7 +1021,7 @@ ALTER TABLE ONLY public.follow_user
     ADD CONSTRAINT user_id1 FOREIGN KEY (followed_user_id) REFERENCES public.users(user_id);
 
 
--- Completed on 2020-05-18 13:15:32 UTC
+-- Completed on 2020-05-18 14:03:36 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -1040,7 +1040,7 @@ ALTER TABLE ONLY public.follow_user
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-18 13:15:32 UTC
+-- Started on 2020-05-18 14:03:36 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1053,7 +1053,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-18 13:15:33 UTC
+-- Completed on 2020-05-18 14:03:36 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -1070,7 +1070,7 @@ SET row_security = off;
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-18 13:15:33 UTC
+-- Started on 2020-05-18 14:03:36 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1106,13 +1106,13 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-18 13:15:34 UTC
+-- Completed on 2020-05-18 14:03:37 UTC
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2020-05-18 13:15:34 UTC
+-- Completed on 2020-05-18 14:03:37 UTC
 
 --
 -- PostgreSQL database cluster dump complete
