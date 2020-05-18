@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2020-05-13 11:57:27 UTC
+-- Started on 2020-05-18 13:15:31 UTC
 
 SET default_transaction_read_only = off;
 
@@ -40,7 +40,7 @@ ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-13 11:57:27 UTC
+-- Started on 2020-05-18 13:15:31 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -53,7 +53,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-13 11:57:27 UTC
+-- Completed on 2020-05-18 13:15:31 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -70,7 +70,7 @@ SET row_security = off;
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-13 11:57:27 UTC
+-- Started on 2020-05-18 13:15:31 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -84,7 +84,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3026 (class 1262 OID 16385)
+-- TOC entry 3035 (class 1262 OID 16385)
 -- Name: QnAForum; Type: DATABASE; Schema: -; Owner: postgres
 --
 
@@ -107,6 +107,140 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- TOC entry 231 (class 1255 OID 49161)
+-- Name: add_user_seen_answers(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.add_user_seen_answers(user_id bigint, seen_answer_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO user_seen_answers(user_id , seen_answer_id)
+		VALUES(user_id , seen_answer_id);
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.add_user_seen_answers(user_id bigint, seen_answer_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1255 OID 40962)
+-- Name: sp_add_follow_question(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_add_follow_question(followed_question_id bigint, follower_user_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO follow_question(followed_question_id , follower_user_id )
+		VALUES(followed_question_id , follower_user_id);
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.sp_add_follow_question(followed_question_id bigint, follower_user_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3036 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: PROCEDURE sp_add_follow_question(followed_question_id bigint, follower_user_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_add_follow_question(followed_question_id bigint, follower_user_id bigint) IS 'Stored procedure to add question followed by a user.';
+
+
+--
+-- TOC entry 225 (class 1255 OID 49155)
+-- Name: sp_add_follow_topic(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_add_follow_topic(followed_topic_id bigint, follower_user_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+   INSERT INTO follow_topic (followed_topic_id , follower_user_id)	
+            VALUES(followed_topic_id , follower_user_id);	
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_add_follow_topic(followed_topic_id bigint, follower_user_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3037 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: PROCEDURE sp_add_follow_topic(followed_topic_id bigint, follower_user_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_add_follow_topic(followed_topic_id bigint, follower_user_id bigint) IS 'Stored procedure to add topics followed by a user.';
+
+
+--
+-- TOC entry 224 (class 1255 OID 49154)
+-- Name: sp_add_follow_user(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_add_follow_user(follower_user_id bigint, followed_user_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+   INSERT INTO follow_user (follower_user_id , followed_user_id)	
+            VALUES(follower_user_id , followed_user_id);	
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_add_follow_user(follower_user_id bigint, followed_user_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3038 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: PROCEDURE sp_add_follow_user(follower_user_id bigint, followed_user_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_add_follow_user(follower_user_id bigint, followed_user_id bigint) IS 'Stored procedure to store the data of a user following another user.';
+
+
+--
+-- TOC entry 229 (class 1255 OID 49159)
+-- Name: sp_add_kudos(bigint, integer); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	UPDATE answers SET answers.kudos = answers.kudos + kudos_to_add
+	    WHERE answers.answer_id = answer_id ;
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer) OWNER TO postgres;
+
+--
+-- TOC entry 3039 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: PROCEDURE sp_add_kudos(answer_id bigint, kudos_to_add integer); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_add_kudos(answer_id bigint, kudos_to_add integer) IS 'Stored procedure to add kudos to user.';
+
+
+--
+-- TOC entry 230 (class 1255 OID 49160)
+-- Name: sp_add_user_seen_question(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_add_user_seen_question(user_id bigint, seen_question_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+	INSERT INTO user_seen_question(user_id , seen_question_id)
+		VALUES(user_id , seen_question_id);
+	 COMMIT;
+END;$$;
+
+
+ALTER PROCEDURE public.sp_add_user_seen_question(user_id bigint, seen_question_id bigint) OWNER TO postgres;
+
+--
 -- TOC entry 221 (class 1255 OID 32770)
 -- Name: sp_insert_answer(character varying, bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
 --
@@ -124,7 +258,7 @@ END;
 ALTER PROCEDURE public.sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint) OWNER TO postgres;
 
 --
--- TOC entry 3027 (class 0 OID 0)
+-- TOC entry 3040 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: PROCEDURE sp_insert_answer(answer_text character varying, answer_poster_id bigint, question_id bigint); Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -149,7 +283,7 @@ END;$$;
 ALTER PROCEDURE public.sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint) OWNER TO postgres;
 
 --
--- TOC entry 3028 (class 0 OID 0)
+-- TOC entry 3041 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: PROCEDURE sp_insert_comment(comment_text character varying, comment_poster_id bigint, answer_id bigint); Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -174,7 +308,7 @@ END;$$;
 ALTER PROCEDURE public.sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint) OWNER TO postgres;
 
 --
--- TOC entry 3029 (class 0 OID 0)
+-- TOC entry 3042 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: PROCEDURE sp_insert_question(question_title character varying, question_details character varying, question_poster_id bigint, question_topic_id bigint); Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -200,7 +334,7 @@ END;
 ALTER PROCEDURE public.sp_insert_topic(topic_name character varying) OWNER TO postgres;
 
 --
--- TOC entry 3030 (class 0 OID 0)
+-- TOC entry 3043 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: PROCEDURE sp_insert_topic(topic_name character varying); Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -225,6 +359,87 @@ $$;
 
 
 ALTER PROCEDURE public.sp_insert_user_details(first_name character varying, last_name character varying, email character varying, bio character varying, profile_picture character varying) OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1255 OID 49157)
+-- Name: sp_unfollow_question(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_unfollow_question(unfollower_user_id bigint, unfollowed_question_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+   DELETE FROM follow_question
+       WHERE follow_question.followed_question_id = unfollowed_question_id
+	   AND follow_question.followed_user_id = unfollower_user_id ; 
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_unfollow_question(unfollower_user_id bigint, unfollowed_question_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3044 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: PROCEDURE sp_unfollow_question(unfollower_user_id bigint, unfollowed_question_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_unfollow_question(unfollower_user_id bigint, unfollowed_question_id bigint) IS 'Stored procedure to unfollow a question already followed by the user.';
+
+
+--
+-- TOC entry 228 (class 1255 OID 49158)
+-- Name: sp_unfollow_topic(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_unfollow_topic(unfollowed_topic_id bigint, unfollower_user_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+   DELETE FROM follow_topic 	
+       WHERE follow_topic.followed_topic_id = unfollowed_topic_id
+	   AND follow_topic.follower_user_id = unfollower_user_id ;
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_unfollow_topic(unfollowed_topic_id bigint, unfollower_user_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3045 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: PROCEDURE sp_unfollow_topic(unfollowed_topic_id bigint, unfollower_user_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_unfollow_topic(unfollowed_topic_id bigint, unfollower_user_id bigint) IS 'Stored procedure to unfollow topic followed by user.';
+
+
+--
+-- TOC entry 226 (class 1255 OID 49156)
+-- Name: sp_unfollow_user(bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_unfollow_user(unfollower_user_id bigint, unfollowed_user_id bigint)
+    LANGUAGE plpgsql
+    AS $$BEGIN
+   DELETE FROM follow_user
+       where follow_user.follower_user_id = follower_user_id
+	   and follow_user.followed_user_id = followed_user_id;
+    COMMIT;
+END;
+$$;
+
+
+ALTER PROCEDURE public.sp_unfollow_user(unfollower_user_id bigint, unfollowed_user_id bigint) OWNER TO postgres;
+
+--
+-- TOC entry 3046 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: PROCEDURE sp_unfollow_user(unfollower_user_id bigint, unfollowed_user_id bigint); Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON PROCEDURE public.sp_unfollow_user(unfollower_user_id bigint, unfollowed_user_id bigint) IS 'Stored procedure to unfollow a user by another user.';
+
 
 SET default_tablespace = '';
 
@@ -471,7 +686,7 @@ ALTER TABLE public.users ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 2873 (class 2606 OID 16453)
+-- TOC entry 2882 (class 2606 OID 16453)
 -- Name: users UC_user_email; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -480,7 +695,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2845 (class 2606 OID 16455)
+-- TOC entry 2854 (class 2606 OID 16455)
 -- Name: answers answers_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -489,7 +704,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2847 (class 2606 OID 16457)
+-- TOC entry 2856 (class 2606 OID 16457)
 -- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -498,7 +713,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2852 (class 2606 OID 16459)
+-- TOC entry 2861 (class 2606 OID 16459)
 -- Name: follow_question follow_question_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -507,7 +722,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2855 (class 2606 OID 16461)
+-- TOC entry 2864 (class 2606 OID 16461)
 -- Name: follow_topic follow_topic_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -516,7 +731,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2858 (class 2606 OID 16463)
+-- TOC entry 2867 (class 2606 OID 16463)
 -- Name: follow_user follow_user_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -525,7 +740,7 @@ ALTER TABLE ONLY public.follow_user
 
 
 --
--- TOC entry 2860 (class 2606 OID 16465)
+-- TOC entry 2869 (class 2606 OID 16465)
 -- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -534,7 +749,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2862 (class 2606 OID 16467)
+-- TOC entry 2871 (class 2606 OID 16467)
 -- Name: topics topic_name; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -543,7 +758,7 @@ ALTER TABLE ONLY public.topics
 
 
 --
--- TOC entry 2864 (class 2606 OID 16469)
+-- TOC entry 2873 (class 2606 OID 16469)
 -- Name: topics topics_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -552,7 +767,7 @@ ALTER TABLE ONLY public.topics
 
 
 --
--- TOC entry 2866 (class 2606 OID 16471)
+-- TOC entry 2875 (class 2606 OID 16471)
 -- Name: user_gave_kudos user_gave_kudos_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -561,7 +776,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2869 (class 2606 OID 16473)
+-- TOC entry 2878 (class 2606 OID 16473)
 -- Name: user_seen_answers user_seen_answers_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -570,7 +785,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2871 (class 2606 OID 16475)
+-- TOC entry 2880 (class 2606 OID 16475)
 -- Name: user_seen_question user_seen_question_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -579,7 +794,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2875 (class 2606 OID 16477)
+-- TOC entry 2884 (class 2606 OID 16477)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -588,7 +803,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2848 (class 1259 OID 16478)
+-- TOC entry 2857 (class 1259 OID 16478)
 -- Name: fki_answer_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -596,7 +811,7 @@ CREATE INDEX fki_answer_id ON public.comments USING btree (answer_id);
 
 
 --
--- TOC entry 2849 (class 1259 OID 16479)
+-- TOC entry 2858 (class 1259 OID 16479)
 -- Name: fki_follow_question_user_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -604,7 +819,7 @@ CREATE INDEX fki_follow_question_user_id ON public.follow_question USING btree (
 
 
 --
--- TOC entry 2850 (class 1259 OID 16480)
+-- TOC entry 2859 (class 1259 OID 16480)
 -- Name: fki_question_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -612,7 +827,7 @@ CREATE INDEX fki_question_id ON public.follow_question USING btree (followed_que
 
 
 --
--- TOC entry 2853 (class 1259 OID 16481)
+-- TOC entry 2862 (class 1259 OID 16481)
 -- Name: fki_topic_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -620,7 +835,7 @@ CREATE INDEX fki_topic_id ON public.follow_topic USING btree (followed_topic_id)
 
 
 --
--- TOC entry 2867 (class 1259 OID 16482)
+-- TOC entry 2876 (class 1259 OID 16482)
 -- Name: fki_user_id; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -628,7 +843,7 @@ CREATE INDEX fki_user_id ON public.user_seen_answers USING btree (user_id);
 
 
 --
--- TOC entry 2856 (class 1259 OID 16483)
+-- TOC entry 2865 (class 1259 OID 16483)
 -- Name: fki_user_id1; Type: INDEX; Schema: public; Owner: pawan
 --
 
@@ -636,7 +851,7 @@ CREATE INDEX fki_user_id1 ON public.follow_user USING btree (followed_user_id);
 
 
 --
--- TOC entry 2878 (class 2606 OID 16484)
+-- TOC entry 2887 (class 2606 OID 16484)
 -- Name: comments answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -645,7 +860,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2888 (class 2606 OID 16489)
+-- TOC entry 2897 (class 2606 OID 16489)
 -- Name: user_gave_kudos answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -654,7 +869,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2891 (class 2606 OID 16494)
+-- TOC entry 2900 (class 2606 OID 16494)
 -- Name: user_seen_answers answer_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -663,7 +878,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2880 (class 2606 OID 16499)
+-- TOC entry 2889 (class 2606 OID 16499)
 -- Name: follow_question question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -672,7 +887,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2876 (class 2606 OID 16504)
+-- TOC entry 2885 (class 2606 OID 16504)
 -- Name: answers question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -681,7 +896,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2889 (class 2606 OID 16509)
+-- TOC entry 2898 (class 2606 OID 16509)
 -- Name: user_gave_kudos question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -690,7 +905,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2893 (class 2606 OID 16514)
+-- TOC entry 2902 (class 2606 OID 16514)
 -- Name: user_seen_question question_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -699,7 +914,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2882 (class 2606 OID 16519)
+-- TOC entry 2891 (class 2606 OID 16519)
 -- Name: follow_topic topic_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -708,7 +923,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2886 (class 2606 OID 16524)
+-- TOC entry 2895 (class 2606 OID 16524)
 -- Name: questions topic_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -717,7 +932,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2892 (class 2606 OID 16529)
+-- TOC entry 2901 (class 2606 OID 16529)
 -- Name: user_seen_answers user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -726,7 +941,7 @@ ALTER TABLE ONLY public.user_seen_answers
 
 
 --
--- TOC entry 2894 (class 2606 OID 16534)
+-- TOC entry 2903 (class 2606 OID 16534)
 -- Name: user_seen_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -735,7 +950,7 @@ ALTER TABLE ONLY public.user_seen_question
 
 
 --
--- TOC entry 2881 (class 2606 OID 16539)
+-- TOC entry 2890 (class 2606 OID 16539)
 -- Name: follow_question user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -744,7 +959,7 @@ ALTER TABLE ONLY public.follow_question
 
 
 --
--- TOC entry 2884 (class 2606 OID 16544)
+-- TOC entry 2893 (class 2606 OID 16544)
 -- Name: follow_user user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -753,7 +968,7 @@ ALTER TABLE ONLY public.follow_user
 
 
 --
--- TOC entry 2890 (class 2606 OID 16549)
+-- TOC entry 2899 (class 2606 OID 16549)
 -- Name: user_gave_kudos user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -762,7 +977,7 @@ ALTER TABLE ONLY public.user_gave_kudos
 
 
 --
--- TOC entry 2883 (class 2606 OID 16554)
+-- TOC entry 2892 (class 2606 OID 16554)
 -- Name: follow_topic user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -771,7 +986,7 @@ ALTER TABLE ONLY public.follow_topic
 
 
 --
--- TOC entry 2877 (class 2606 OID 16559)
+-- TOC entry 2886 (class 2606 OID 16559)
 -- Name: answers user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -780,7 +995,7 @@ ALTER TABLE ONLY public.answers
 
 
 --
--- TOC entry 2879 (class 2606 OID 16564)
+-- TOC entry 2888 (class 2606 OID 16564)
 -- Name: comments user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -789,7 +1004,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 2887 (class 2606 OID 16569)
+-- TOC entry 2896 (class 2606 OID 16569)
 -- Name: questions user_id; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -798,7 +1013,7 @@ ALTER TABLE ONLY public.questions
 
 
 --
--- TOC entry 2885 (class 2606 OID 16574)
+-- TOC entry 2894 (class 2606 OID 16574)
 -- Name: follow_user user_id1; Type: FK CONSTRAINT; Schema: public; Owner: pawan
 --
 
@@ -806,7 +1021,7 @@ ALTER TABLE ONLY public.follow_user
     ADD CONSTRAINT user_id1 FOREIGN KEY (followed_user_id) REFERENCES public.users(user_id);
 
 
--- Completed on 2020-05-13 11:57:28 UTC
+-- Completed on 2020-05-18 13:15:32 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -825,7 +1040,7 @@ ALTER TABLE ONLY public.follow_user
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-13 11:57:28 UTC
+-- Started on 2020-05-18 13:15:32 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -838,7 +1053,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-13 11:57:28 UTC
+-- Completed on 2020-05-18 13:15:33 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -855,7 +1070,7 @@ SET row_security = off;
 -- Dumped from database version 12.2 (Debian 12.2-2.pgdg100+1)
 -- Dumped by pg_dump version 12.2
 
--- Started on 2020-05-13 11:57:28 UTC
+-- Started on 2020-05-18 13:15:33 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -891,13 +1106,13 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2020-05-13 11:57:28 UTC
+-- Completed on 2020-05-18 13:15:34 UTC
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2020-05-13 11:57:28 UTC
+-- Completed on 2020-05-18 13:15:34 UTC
 
 --
 -- PostgreSQL database cluster dump complete
